@@ -399,9 +399,9 @@ clear all; close all; clc
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%                                                                         %
-%                               CHAPTER 5.                                %
-%                                                                         %
+%%                                                                        %
+%%                               CHAPTER 5.                               %
+%%                                                                        %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % EEG reflects (mainly) the summation of excitatory and inhibitory
@@ -450,9 +450,9 @@ clear all; close all; clc
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%                                                                         %
-%                               CHAPTER 6.                                %
-%                                                                         %
+%%                                                                        %
+%%                               CHAPTER 6.                               %
+%%                                                                        %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % It should be clear by now what you need, in terms of an EEG lab and an
@@ -478,9 +478,9 @@ clear all; close all; clc
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%                                                                         %
-%                               CHAPTER 7.                                %
-%                                                                         %
+%%                                                                        %
+%%                               CHAPTER 7.                               %
+%%                                                                        %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Okay, let's say you managed to get your high quality data - the bare
@@ -544,9 +544,9 @@ clear all; close all; clc
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%                                                                         %
-%                               CHAPTER 8.                                %
-%                                                                         %
+%%                                                                        %
+%%                               CHAPTER 8.                               %
+%%                                                                        %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Even high quality data will still need preprocessing. All data -
@@ -630,9 +630,9 @@ clear all; close all; clc
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%                                                                         %
-%                               CHAPTER 9.                                %
-%                                                                         %
+%%                                                                        %
+%%                               CHAPTER 9.                               %
+%%                                                                        %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Okay, let's get back to time-domain analyses and ERPs. Recall that data
@@ -1009,7 +1009,7 @@ cov(var1,-var2)
 % We've flipped the sign of one of the variables and that flips the sign of
 % the covariance. The 'similarity' (or lack there of) interpretation is
 % that covariance (and correlation) say something about whether two vectors
-% behave 'similarly' or not.
+% 'behave similarly' or not.
 
 % Let's say that we have two variables with means of zero: both the
 % covariance and the dot() will be zero.
@@ -1330,8 +1330,8 @@ conv_signal_trimmed = conv(signal,kernel,'same');
 % kernel second.
 
 % But what does it all "mean", man!?!? Now that you know that dot products
-% are about similarity, you should be able to guess that one interpretation
-% of a convolution is that it's.. merely a sliding similarity measure.
+% can reflect similarity, you can now guess that one possible interpretation
+% of a convolution is that it's.. a /sliding/ similarity measure.
 figure; plot(signal); hold on; plot(conv_signal)
 % The signal fluctuations between -1 and +1, the convolution between -15
 % and +15. When we move a positive vector (which is what our kernel is)
@@ -1419,8 +1419,8 @@ xlabel('Time points'); ylabel('Voltage µV')
 
 % Based on visual inspection, what is the effect of convolving the EEG data
 % with these two kernels?
-% The convolved signals appear low-pass filtered ('smoothed out'). The
-% inverted-U kernel allows for more troughs and peaks in the final result, 
+%           The convolved signals appear low-pass filtered ('smoothed out').
+% The inverted-U kernel allows for more troughs and peaks in the final result, 
 % compared to the decay-convolved signal. Thus, the features of the given 
 % kernel are allowed to 'pass through', if you will, if they match those of
 % the signal (locally). Note that at the starting and ending time points,
@@ -1438,13 +1438,14 @@ clear all; close all; clc
 %%                                                                        %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%% The imaginary line, complex numbers, and.. moving around a corkscrew
 % We're almost ready to learn about Fourier transform, the backbone of
 % (most) EEG analyses. It works by computing the dot product between the
 % EEG data (the signal) and sine waves of a range of frequencies (the 
 % kernels). Recall from Chapter 3 that EEG data have frequency, power,
 % and phase. The result of a Fourier transform is a three-dimensional
-% representation of the frequency, power, and phase similarity between the
-% signal and the kernel.
+% representation of the frequency, power, and phase /similarity/ between
+% the signal and the kernel.
 
 % The remaining thing to understand is the concepts of imaginary and
 % complex numbers. Recall from the Chapter 10 how we briefly talked about
@@ -1456,10 +1457,10 @@ clear all; close all; clc
 
 % But we can, in principle, place a number line wherever we want. You might
 % think 'Well, that's like Cartesian coordinates, isn't it? An x-axis and a
-% y-axis? Two number lines?" Well, not quite. In that case, we're
+% y-axis? Two number lines?" Ehh, not quite. In that case, we're
 % visualizing how a function takes us from one point on the traditional
-% number line to another point on the same traditional number line. But
-% here, we're talking about a completely separate number line altogether.
+% number line to another point on the exact same ol' number line. But
+% here, we're talking about a completely /separate/ number line altogether.
 % But since we're familiar with Cartesian coordinates, let's /imagine/ that
 % we have a completely different number line at a right angle to our first
 % number line:
@@ -1482,17 +1483,22 @@ clear all; close all; clc
 % This second number line is called the 'imaginary number line', with the
 % numbers along it called 'imaginary numbers'. The traditional number line 
 % is then called the 'real number line' with 'real numbers'. In my opinion, 
-% these are a TERRIBLE names, just the absolute worst, but it is what it is. 
+% these are TERRIBLE names, just the absolute worst, but it is what it is. 
 % Regardless, the imaginary number line has a unique property where the 'i' 
-% represents the 'imaginary unit: square root of -1'. The point is, now we 
-% can express numbers in relation to these two number lines (as opposed to 
-% in relation to just the real number line).
+% represents the 'imaginary unit: square root of -1'. Personally, I like to
+% think of these number lines as dimensions -- our 'real' number line is a
+% dimension and the 'imaginary' number line is.. simply another dimension.
+% But that doesn't mean that the 'square-root-of-minus-1' is arbitrary.
+% That part is actually crucial, it /has to/ to be that number. We'll see 
+% why, in a little bit. For now, the point is that we can express numbers 
+% in relation to these /two/ number lines (as opposed to in relation to 
+% just the real number line).
 
 % The number 2 now gets written as '2 + 0i', meaning that it's 2 on the
 % real number line and 0 on the imaginary line (hence the i, to indicate
 % the imaginary line). The expression of a number is now a bit more complex
 % as a you can see. Well, guess what -- we call these numbers 'complex 
-% numbers'. The complex number 2+1i is shown above with a dot. And the 
+% numbers'. The complex number 2+1i is shown above with a dot (o). And the 
 % 2-dimensional plane that these complex numbers lie on is called the 
 % 'complex plane'. Again, just 0 out of 10, two-thumbs-down on the naming 
 % convention. Point is, complex numbers come in the form 'a + bi', where
@@ -1500,13 +1506,18 @@ clear all; close all; clc
 % "imaginary" component. Apparently, it was René Descartes who came up with
 % the name 'imaginary numbers', because he - and many other mathematicians
 % at the time - thought the idea was ludicrous and that those numbers were
-% pointless.
+% pointless. But they work and they're incredibly important, so don't let
+% the naming conventions fool you. Also note from a few sentences ago that
+% the second term in the complex number is b /times/ i. As we said, i is a
+% number, not just a label we tack onto the b. In a+bi, the a is a variable
+% number, b is a variable number, and i is sqrt(-1) and it gets multiplied
+% with b.
 
 % Now note that we can also use trigonometry to draw vectors, circles, and
 % - hence - periodic functions, but.. on the complex plane! So, whereas
 % previously, the cos(angle) was on the x-axis and the sin(angle) on the
 % y-axis, we now have cos on the real line and sin on the imaginary line.
-% Writing complex numbers in aforementioned way [ a + bi ] and plotting
+% Writing complex numbers in the aforementioned way [ a + bi ] and plotting
 % them in a 2-dimensional complex plane is of course similar to the x and y
 % Cartesian coordinate system. And so, 'a + bi' is known as the 'Cartesian
 % form' of a complex number.
@@ -1533,22 +1544,29 @@ grid on
 xlim([-2 2]); ylim([-2 2])
 xlabel("Real(z)"); ylabel("Imag(z)")
 
-% From this, you should be able to see that any /point/ along this unit
-% circle can be expressed as follows:
-% radius( cos(angle) + i * sin(angle) )
-% Thus, notice that the radius term disappears (because it equals 1 for the
-% unit circle, and the i term is introduced to indicate that sin is on the
-% imaginary axis.
-%           Importantly, notice how the cosine and sine components map onto
-% our earlier point about complex numbers (a + bi) -- the cosine maps onto
-% the real axis and the sine onto the imaginary axis.
-%           By the way, remember how - when creating a sine or cosine wave
-% Chapter 3 - we wrote something like the following:
-% .7 * sin(2*pi*x * 36 - .5) + 1
-% That amplitude of 0.7 is effectively the radius. But then also notice
-% that the imaginary 1i is the radius - and therefore amplitude - of the
-% sine wave in the earlier expression [ i * sin(angle) ]. That amplitude
-% can itself of course also be scaled [e.g., 5i * sin(angle) ].
+% You can play around with the individual radii, creating an oval, for
+% example. These radii are gonna be important later. For now, just note
+% that the radius 'stretches' the circle in a certain direction: along the
+% real line, if it's the radius of the cos(); in the imaginary direction,
+% if it's the radius of the i*sin() term.
+cos_radius = 1;
+sin_radius = 2;
+z = complex(cos_radius * cos(theta), sin_radius * sin(theta));
+close all % close all other figures
+figure; plot(real(z),imag(z))
+grid on
+xlim([-2 2]); ylim([-2 2])
+xlabel("Real(z)"); ylabel("Imag(z)")
+
+% For now, let's focus on the 'unit' complex circle, where the radius is 1
+% for both cos() and i*sin().  From this, you should be able to see that 
+% any /point/ along this unit circle can be expressed as follows:
+%      radius( cos(angle) + i * sin(angle) )
+% We simply factored out the radius term. And since it's 1, we can just drop
+% it. We could've dropped it before factoring, even. I just want to focus
+% on the cos() and i*sin() for now. To proceed, what you need to know is 
+% that the  cosine and sine components map onto the real and imaginary
+% axes, respectively.
 
 % Okay, we're now going to be rewriting cos(angle) + i * sin(angle)
 % to produce an expression that is more commonly used, using some rules from
@@ -1603,6 +1621,26 @@ grid on
 xlim([-2 2]); ylim([-2 2])
 xlabel("Real(z)"); ylabel("Imag(z)")
 % As you can see, we get the same result as before
+
+% So, what's with this number e? It's value is ~ 2.718281....
+% You can change the base of the exponent, to something else. For example,
+% change it to 1, or 2, or 2.7 and see what happens to the circle:
+base = 5;
+theta = 0: pi/100 : 2*pi; % In radians
+z = base.^(1i*theta); % Altered base of the exponential
+figure; plot(real(z),imag(z))
+grid on
+xlim([-2 2]); ylim([-2 2])
+xlabel("Real(z)"); ylabel("Imag(z)")
+% It should be obvious, now, that when we use the number e, we create an
+% exactly full circle around the complex plane. Any number below e, doesn't
+% complete it fully. Any number above that will overshoot. You can try a
+% number above e and then plot the 3D plot below, to see that.
+
+% Reset z to be created with the number e, if you want to proceed with the
+% tutorial. Or, change the base above to something else to see why we need
+% the base to be e.
+z = exp(1i*theta);
 
 % Okay, but now look at this. Instead of plotting it in 2 dimensions, we'll
 % plot our 'circle' in 3 dimensions:
@@ -1665,12 +1703,14 @@ zlabel('Angle (radians)')
 % critical, because we can move the negative sign toward the back, like
 % this:
 z = exp(1i*theta* -freq); % "Negative" frequency
-comet3(radius*real(z), radius*imag(z), theta)
+figure; comet3(radius*real(z), radius*imag(z), theta)
+xlabel('Real(z)'), ylabel('Imag(z)'), zlabel('Angle (radians)')
 % Same result, because it doesn't matter where we flip the sign in the
 % expression. This all might seem trivial, but it's actually rather
 % important. In fact, we're going to stick with this label of 'negative
 % frequency' moving forward, because the counter-clockwise (positive) vs
 % clockwise (negative) motion is gonna prove critical.
+close all
 
 % To be complete, we can - of course - also move the negative sign to be in
 % front of the angles. Since angles are on the z-dimension, we're kinda 
@@ -1679,69 +1719,139 @@ z = exp(1i* -theta *freq);
 comet3(radius*real(z), radius*imag(z), theta)
 % Same clockwise motion as before. If you then insist, you can also flip
 % the orientation of the z-axis itself, so that things do move downward
-% now.
+% this time.
 comet3(radius*real(z), radius*imag(z), -theta)
-
-% In any case, the critical matter is the direction the dot is moving:
-% counter-clockwise [ exp( 1i*theta*freq) ] or.. 
-% clockwise         [ exp(-1i*theta*freq) ]
-close all
-
 
 % Let's take another look at the 2d unit circle animation.
 ANTSD_animatedwaves(1)
 % Look at the bottom right panel, it shows the two waves (sine and cosine)
 % plotted in the same figure. The cosine starts at 1, whereas the sine
 % starts at 0. After one period, they of course are back where they
-% started. Now as yourself, 'How much out of phase are they?'. If you had
+% started. Now ask yourself, 'How much out of phase are they?'. If you had
 % to start with the sine function [ sin() ] and had to make a cosine, what
 % would you do? Well, when the cos() is at 1, sin() is at 0. When sin() is
 % at 1, cos() is at 0. Interesting! If you look at the points on the circle
 % where those peaks (at 1) happen, they are 90 degrees apart. They are
 % /orthogonal/. This should make sense, cos() gets its value on the real
 % line and sin() on the imaginary line.. and we defined those lines earlier
-% as.. lines that were orthogonal. We'll come back to the importance of
-% this in a moment.
-
-
-
-
-
+% as.. lines that are orthogonal.
 clear all; close all; clc
 
-% And, finally, as with the other periodic functions, we can now 'speed
-% up', 'slow down', and 'shift' that function around by introducing a
-% multiplier that represents the frequency and introducing added/subtracted
-% terms that represent phase, and so on (see sine waves in Chapter 2).
-%          Figure 11.2 is another example of multiple individual sine waves
-% being summed to create a 'summed sine wave', comparable to the example in
-% Chapter 2. The summed sine wave looks much more like an actual EEG signal
-% than any of the individual waves. Fourier transform can take that summed
-% sine wave and 'de-sum/decompose/deconstruct/demix' that wave from Figure
-% 11.2B and give us back (more or less) the individual waves we see in
-% Figure 11.2A. Even when there's random noise added to the summed wave, as
-% in Figure 11.3. Let's FINALLY see how that works.
+% The main 3 take-aways:
+% 1. We can move around the circle/corkscrew in two directions
+% counter-clockwise [ exp( 1i*theta*freq) ] or.. 
+% clockwise         [ exp(-1i*theta*freq) ]
+% 2. Often, this difference is what is meant with 'negative frequency' -
+% the movement around the corkscrew in a clockwise manner. There are other
+% ways to think about 'negative frequency', but this is one of 'em.
+% 3. For a complex number, we have a real part and an imaginary part.
+% Similarly, when moving around the complex plane in a circle, the cos()
+% maps onto the real line and the i*sin() maps onto the imaginary line.
+% These two lines are orthogonal and, accordingly, cos() and sin() are also
+% orthogonal (meaning 90 degrees apart).
 
-%% Fourier Transform
+
+%% Screwing around with the complex corkscrew
+% We now have a basic understanding of the complex plane and moving around
+% it in a circular manner, which - in actuality - results in a corkscrew
+% (when we plot out our rotational trajectory in the complex plane against
+% all possible phases).
+% As you may have guessed, just like with other periodic functions, we can 
+% now 'speed up', 'slow down', and 'shift' that corkscrew by introducing 
+% a multiplier that represents the frequency and introducing added/subtracted
+% terms that represent our starting phase, and so on (see Chapter 2).
+
+% Let's plot our corkscrew again and this time, play around with the
+% frequency, radii, and the phase (leave the theta variable untouched, but
+% try changing the phase in the cos() and sin() terms (like in Chapter 3).
+% Play around with all this and see what happens,
+freq = 3;
+cos_radius = 1; sin_radius = 1;
+cos_phase = 0; sin_phase = pi/2;
+%cos_phase = 0; sin_phase = pi/2;
+
+theta = 0: pi/100 : 2*pi * freq; % Do you understand why the entire range of theta here needs to be multiplied by the frequency?
+z = complex(cos_radius * cos(theta + cos_phase), sin_radius * sin(theta + sin_phase));
+figure; comet3(real(z), imag(z), theta)
+xlabel('Real(z)')
+ylabel('Imag(z)')
+zlabel('Angle (radians)')
+
+% Run any of these views to change the perspective
+view([0 90]) % x: Real, y: Imaginary
+view([90 0]) % x: Imaginary, y: Angle
+view([0 0])  % x: Real, y: Angle
+
+% We saw in the previous section that playing around with the radii
+% stretches or shrinks the corkscrew in the direction of one of the number
+% lines: along the real line by changing the radius of the cos() and along
+% the imaginary line by changing the radius of the i*sin().
+%           By making those radii different and then changing the views,
+% you can see that a radius actually maps onto an amplitude. So, if we keep
+% the cos_radius = 1 but make sin_radius = 2.5, we see that the radius of
+% the wave along the real number line is 1 but along the imaginary line is
+% now 2.5.
+
+% When we created a sine wave in Chapter 3. We wrote something like this:
+%      .7 * sin(2*pi*x * 36 - .5) + 1
+% So, the amplitude of 0.7 is effectively a radius and, vice versa, the
+% radius is effectively the amplitude. It's the same thing! One of the
+% things we want to figure out with a Fourier transform is find the power
+% at a certain frequency, which means we need to find the amplitude of the
+% sinusoid at that frequency.. which means we need to find the radius for
+% the circular motion.. which means we are finding the coefficient that
+% precedes the sin() term above. And these are not all things we need to
+% find /sequentially/, they are all the same singular thing, just with
+% different names.
+
+% Frequency, another important characteristic of the signal, is defined /in
+% relation to some period/. That's why, if we don't add '* freq' to the
+% multiply with '2*pi' above when defining the thetas, we will only see one
+% period of the sinusoid (no matter what frequency we choose above 1).
+% Although you can imagine having different frequencies for the cos() and
+% sin() terms, when we get around to doing the Fourier transform, we're
+% going to be constructing kernels with a single frequency, but our cos and
+% i*sin terms will be 90 degrees out of phase. Speaking of which..
+
+% What about phase? Say that we shift the phase of one of the waves by
+% pi/2 (that's 90 degrees). What happens to the plot? Well, we just get a
+% straight line if we look at at with view([0 90]). Why is that? We've
+% brought the cos() and i*sin() in full alignment. So, whatever the cos()
+% value is at a given point, the i*sin() value will match it. Point is, our
+% cos and i*sin terms are orthogonal and should - therefore - be able to
+% pick up on the frequency in the signal if it's in there somewhere. More
+% on that REALLY soon. I promise. PSYCH! It's not 'soon'. It's RIGHT NOW.
+clear all; close all; clc
+
+%% Fourier Transform (part I)
 % Yes, it's finally time -- we are now ready for Fourier transforms.
 % Specifically, what we'll be doing is /discrete time/ Fourier transform.
-% It is discrete time, as opposed to continuous, because we have our time
+% It is discrete /time/, as opposed to continuous, because we have our time
 % domain in discrete steps/time points. If we'd recorded the EEG signal
 % continously, rather than with samples every e.g. 100 ms, it wouldn't be
 % discrete -- then it would be called continuous-time Fourier transform,
 % which is simply 'the' Fourier transform. However, in practice, we're
 % unlikely to have access to continuous data and are only able to take
-% samples of that continuous signal with a certain sample rate.
+% samples of that continuous signal with a certain sample rate. In fact,
+% because our data are /sampled/, rather than continuous, we can perform
+% the computations very quickly. So, in many ways, it actually helps us
+% out, to the point where nowadays this 'fast' version of the Fourier
+% transform is considered to be 'the' Fourier transform (because why would
+% you go for the slower version?).
 
-% By the way, what is a 'transform'? It's akin to a function, which takes
-% an input value and produces an output value. A transform takes a /set/ of
+% Before we start, what's a 'transform'? It's like a function, which takes
+% an input value and produces an output value: a transform takes a /set/ of
 % input values and produces a /set/ of output values. The way a function
 % takes you from a number to a number, a transform takes you from one
 % function to another function. I mean, okay - this still feels very vague 
 % and imprecise, but that definition is sufficient, in case you were
 % wondering why it's Fourier /transform/ instead of Fourier /function/.
+% Eventually, our goal will be to go from a polynomial function to another
+% polynomial function. But to get us started, let's just look at 'going
+% from some set of numbers' (the data/signal) to 'another set of numbers'
+% (the Fourier coefficients/series).
 
-% Let's look at the code on page 125, where a Fourier transform is shown.
+% Look at the code on page 125, where a Fourier transform is shown.
 N = 10; % length of sequence
 data = rand(1,N); % random numbers
 % initialize Fourier coefficients
@@ -1752,23 +1862,26 @@ for fi=1:N % We're testing all frequencies from 0 Hz to N-1 Hz against the data
     % create sine wave (well.. 'sinusoid' but okay)
     sine_wave = exp(-1i*2*pi*(fi-1).*time); % Note the -1i (negative!)
     % compute dot product between sine wave and data
-    fourier(fi) = sum(sine_wave .* data);
+    fourier(fi) = sum(sine_wave .* data); % Resulting Fourier coefficients
 end
 % In the next example, we'll also divide the sums by the number of data
 % points as follows (the example in the book doesn't do that yet):
-% fourier=fourier/N
+%      fourier=fourier/N
 % Why is that done? In the last line of the loop, the dot product, we can
 % see that each Fourier coefficient is the result of a sum of N data
 % points. After all.. that's what the dot product is. This means that, with
 % every additional data point, the dot product will keep growing.. and
 % growing.. and growing. What we're ultimately interested in, of course, is
-% more akin to an 'average' measure of similarity for each data point. And
-% so, we divide it by N.
+% more akin to an 'average' measure of similarity per data point. And
+% so, we divide it by N. Remember how, in a previous section, I mentioned
+% that we divide by the number of data points (minus 1), when fitting a 
+% line and computing the sum of squared errors? Same here, but now it's
+% 'fourier=fourier/N' for the transform. Anyway, back to the example..
 
 % So, we have 10 data points (defined by N and data) and will be resolving 
-% 10 different frequencies (in variable 'fourier') with a sine wave that is
-% represented by frequencies from 0 to 9 (i.e., fi-1) unfolding over 1
-% second ((0:N-1)/N).
+% 10 different frequencies (saved to variable 'fourier') with a sine wave 
+% that is represented by frequencies from 0 to 9 (i.e., fi-1) unfolding over 
+% 1 second ((0:N-1)/N).
 
 % Why are we subtracting 1 from each fi? fi is defined as numbers from 1:N,
 % where N=10. So: 1, 2, 3 ... 10. But, by subtracing 1 each time, we get:
@@ -1781,15 +1894,44 @@ end
 % You might also be wondering, why is it -1i instead of 1i in the
 % exponent? Simple answer is that 'terms in the math of the transform will
 % end up canceling out' if we don't do it this way. So, for now, keep in
-% mind that this is what needs to be done. In fact, when we do a so-called
+% mind that this is what /needs/ to be done. In fact, when we do a so-called
 % /inverse/ Fourier transform, you'll see that we rotate things 
 % counter-clockwise again. You might see people state that this negative
 % sign is 'mere convention', but there's a mathematical reason for it.
+% We'll get into the math in a little bit. For now, just make sure you get
+% a bird's-eye view of the (most simple implementation) of the procedure:
+% 1. We have a dataset of n samples (e.g., 10 data points)
+% 2. We choose a number of frequencies to test (e.g., 0-9 Hz)
+% 3. Set up a clockwise corkscrew of each of those frequencies, one by one,
+%    and compute the dot product between each corkscrew and the data.
 
-% Now that you know how to do the transform, let's see how you can actually
-% view the results. We'll recreate Figure 11.4.
+% The computed dot product is a complex number, since each of our tested
+% kernels are complex corkscrews. So, each of the 10 entries in the
+% variable 'fourier' is a complex number. This list of complex numbers that
+% is the result of the Fourier transform is known as the 'Fourier series'
+% and each entry is a Fourier coefficient (for reasons that'll become clear
+% soon).
+
+% And.. that's it. Is it really that simple? Well, kinda. The above is the
+% most simple, bare bones, version of a Fourier transform. The output that
+% you now have, in the variable fourier(), has all the information about
+% how each of the kernels are reflected in the signal. But.. this isn't
+% what we would actually do in practice. There are some problems you might
+% have already guessed:
+% How would I pick the frequencies to test? There's endless many of them,
+% literally! Because there are infinite integers to pick (0 Hz, 1 Hz, 2
+% Hz.. 10000000 Hz, and so on), let alone infinite non-integer frequencies
+% (0.5 Hz, 1.490783 Hz, 99.90903472 Hz, pi Hz, and so on). And even if you 
+% pick a million frequencies to test, you might be unlucky and miss every
+% single frequency that's /actually/ in your signal. So, with a real
+% dataset, we'll need a different approach: one where we are limited to a
+% finite number of frequencies which somehow also guarantees that we will
+% find those sinusoids which - when summed together - reproduce the signal.
+
+% Before proceding to figure all that out, let's first see how you can 
+% actually view the results of the transform. We'll recreate Figure 11.4.
 srate=500;
-time=-1:1/srate:1;
+time=0:1/srate:1;
 
 % Create three sine waves
 s1 = sin(2*pi*3*time); % Freq = 3, Amp = 1
@@ -1800,8 +1942,17 @@ hz = linspace(0,srate/2,floor(length(time)/2)+1);
 % With srate=500, we have a Nyquist of (srate/2=) 250. And because we
 % want to include the DC component, we go from 0 to the Nyquist frequency 
 % in (n_datapoints/2)+1 steps.
+%           This line of code, to get our tested frequencies, is not gonna
+% make sense to you just yet, but it will soon. Nevertheless, you should
+% click on the variable in your workspace and look at the numbers. It's a
+% list of 501 entries starting from 0 going up to 250 in linearly spaced
+% intervals .5 Hz. This is because we don't /actually/ have to test an
+% infinite number of frequencies. There /is/ a way to pick a finite set of
+% frequencies to test which will guarantee that we can reconstruct the
+% original signal using only the Fourier coefficients of each of these
+% tested 501 frequencies. For the moment, that's all you need to know.
 
-% plot the sine waves
+% Plot the sine waves
 figure
 for i=1:3
     subplot(2,3,i) % Top row of figure
@@ -1822,7 +1973,7 @@ for i=1:3
     % Only plotting the so-called 'positive' frequencies!
     % We are also doubling (some of) the coefficients we got!
     % More on both these choices in a moment.
-    f(2:length(hz)) = 2 * f(2:length(hz));
+    f(2:(length(hz)-1)) = 2 * f(2:(length(hz)-1));
     bar(hz,abs(f(1:length(hz))))
     set(gca,'xlim',[0 11],'xtick',0:10,'ylim',[0 1.2])
 end
@@ -1844,20 +1995,23 @@ end
 % than the original signal. (If you're interested in why we use sinusoids
 % specifically, look up 'sinusoidal fidelity').
 
-
 % Okay, so when we were plotting amplitudes, we made two important choices.
 % First, we only plotted /some/ of the Fourier coefficients (i.e., the
 % output of the transform as produced by fft(). In fact, we're plotting
 % only the first half of the entire output. Second, the half that we're
-% plotting gets multiplied by 2. Why?
+% plotting gets multiplied by 2 (except for the DC and Nyquist). Why?
 %           The frequency spectrum of a the signal is symmetrical around
 % the DC (0 Hz): thus, there are positive frequencies and negative
 % frequencies. Let's see the FULL power spectrum of the summed signals in
 % the figure above. Also, let's NOT double our coefficients yet.
+for i=1:3
+    % Same procedure as before, but no doubling for now!
+    f  = eval([ 'fft(s' num2str(i) ')/length(time)' ]);
+end
 figure
-subplot(311)
+subplot(211)
 fullhz = linspace(0,srate,length(time));
-bar(fullhz,abs( f )) % Note, no doubling for now!
+bar(fullhz,abs( f ))
 ylim([0 1.5])
 % When we plot the entirety of our fft() output, we see that, towards the
 % end of our output, the pattern at the start is mirrored. Importantly,
@@ -1868,25 +2022,25 @@ xline(srate/2,"LineWidth",5);
 % frequency, the power spectrum is mirrored. This is also referred to as
 % Hermitian symmetry.
 
-% We can use ffshift() to shift our Nyquist to the center of the spectrum.
-subplot(312)
-bar(fullhz,fftshift(abs(f)))
+% We currently have the Nyquist frequency at the center of our figure, but
+% we can use fftshift() to put the 0 Hz at the center instead.
+subplot(212)
+shiftedfullhz = linspace((-srate/2),(srate/2),length(time));
+bar(shiftedfullhz,fftshift(abs(f)))
 % If you hover your mouse over the tops of the 2 shorter graphed bars,
-% you'll see that one is plotted at 258 and the other at 242 -- both
-% equally far away from 250 (i.e. +/- 8).
+% you'll see that one is plotted at -8 and the other at +8. Similarly, the
+% two longest bars are at -3 and +3 Hz.
 
-% In our first plot, the shorter bar was plotted at +8 Hz, so let's shift
-% our center point to be 0 Hz - i.e., the DC - instead.
-subplot(313)
-mirroredhz = -(srate/2):.5:(srate/2);
-bar(mirroredhz,fftshift(abs(f)))
 % This should, hopefully, help you understand where labels like positive
 % and negative frequencies come from. The negative frequencies are the
-% mirrored versions of the positive frequencies. But.. that doesn't
-% actually explain what those negative frequencies /are/ (just why they may
-% be called that).
+% mirrored versions of the positive frequencies. We discussed 'negative'
+% frequencies earlier, in the context of the minus sign in the exponent of
+% Euler's identity and moving along the corkscrew in a clockwise or
+% counter-clockwise manner. Well, the power spectrum's mirroring is another
+% way of thinking about 'negative' frequencies.
 
-% Before we get to that, though, let's go back to the step where we double
+% There are more ways to think about negative frequencies, but before we 
+% get to that, let's go back to the step where we double
 % the output of the transform to get the amplitude back. The reason we do
 % that is because half of the amplitude of the decomposed signal is
 % represented in the positive frequencies and the other half in the
@@ -1894,49 +2048,185 @@ bar(mirroredhz,fftshift(abs(f)))
 % so, when we DON'T plot a double-sided spectrum (i.e., the full spectrum
 % with the mirror) and only plot the single-sided spectrum.. we need to
 % multiply the coefficients by 2 to get the 'full picture'.
-xlim([-10 10])
+
 % You can zoom in on the x-axis in the bottom plot to get a closer look.
 % Hover your mouse over the top of the bars again and look at the y-values.
+xlim([-10 10])
+% You can see that the longest bars go up to 0.5 and the shortest up to
+% 0.25. Indeed, half the power is in the positive and the other half in
+% the negative frequencies. Now, when we plot only the non-negative
+% frequencies (i.e, 0 and higher), we don't need to /actually/ add the
+% corresponding values for each frequency together. We can just plot the
+% frequencies from 0 and up and simply double every value. That is, /with
+% the exception of 0 Hz and the Nyquist frequency/. Those are our mirroring
+% points; the frequencies /around/ those two are the ones that are split
+% between positive and negative components. So, the DC and Nyquist are
+% /not/ doubled.
+clear all; close all; clc
 
-% Back to negative frequencies, what they are and where they come from. 
+% Alright, so let's learn a bit more about what negative frequencies are.
 % Negative frequencies result from us working with discretized signals.
-% Because our data isn't continuous, the individually sampled data points
+% Because our data aren't continuous, the individually sampled data points
 % in our signal can be fit equally well by multiple frequencies.
 %           For instance, say you have a 2 Hz signal sampled at 16 Hz. The 
 % Nyquist frequency, therefore, is 8 Hz. The Fourier transform might then
 % test frequencies from 0 to 16 Hz in 1 Hz steps, testing the similarity to
-% the signal using a cosine and inverted sine wave.
-%           Recall: cos(angle) + i * sin(angle), which then gets rotated in
-% a CLOCKWISE manner, meaning the sine wave starts out heading in a negative
-% direction rather than positive. There was a reason for that, if you 
-% remember, which is that 'some math terms' cancel out that way and that 
-% that's a good thing. Well, get ready for that to be demystified shortly.
-%           As the transform is testing the various frequencies, each
+% the signal. As the transform is testing the various frequencies, each
 % cosine and sine component of the kernel get a 'similarity' score. The
 % problem with discretized signals, as mentioned, is that multiple
 % frequencies can fit the discretized points equally well. In our example
 % of a 2 Hz signal sampled at 16 Hz, a kernel of 2 Hz gets the same
 % similarity score as one that is 14 Hz, because we don't know what is
-% going on in between the sampled points. The same is true is for 7 and 9
+% going on in /between/ the sampled points. The same is true is for 7 and 9
 % Hz, and for 6 and 10 Hz, and so on. This is known as 'aliasing'.
-%           Okay, still not quite explaining what is 'negative' about any
-% of this. Take another look at this animation:
+srate=16;
+time=0:1/srate:1;
+freq=2;
+signal = sin(2*pi*freq*time);
+plot(time,signal,"o")
+title("2 Hz signal, sampled at 16 Hz")
+
+% Here's our 2 Hz signal (2 full periods over the course of 1 second), 
+% sampled at 16 Hz (16 data points in 1 second; the 17th data point in the
+% plot/data is the first data point of the next second).
+
+% Now we can fit a 2 Hz signal through those points
+hold on
+splined_signal = spline(time,signal,0:.01:1);
+plot(0:.01:1,splined_signal,"-r")
+% spline() made a smoothed curve for us of the original 2 Hz signal
+% and we now plotted that curve in red through our 'sampled data'. But it
+% didn't change anything about the underlying sampling rate of 16 Hz; it
+% merely /interpolates/ across values on our original x-axis.
+% Unsurprisingly, the curve of 2 Hz fits the sampled data perfectly,
+% because we sampled.. the same 2 Hz curve. Duh!
+
+% As stated, our Nyquist frequency is 8 Hz. That's 6 Hz away from 2 Hz. On
+% the other side of 8 Hz, moving 6 Hz up, we get to 14 Hz. Look at this:
+hold on
+signalalias = sin(2*pi*14*time);
+splined_alias = spline(time,signalalias,0:.01:1);
+plot(0:.01:1,splined_alias,"-g")
+% The 14 Hz wave is now plotted in green. But wait a minute. It's just like
+% the 2 Hz wave, just inverted. What's going on here?! The 14 Hz sinusoid
+% is aliasing (i.e., "mimicking" or "presenting itself as" a flipped 2 Hz
+% signal). And what's another way of plotting an inverted version of the 2
+% Hz sine wave? You guessed it -- reverse the sign! NEGATIVE 2 Hz.
+hold on
+negative_2Hz = - sin(2*pi*2*time); % NOTE THE MINUS SIGN
+splined_neg2Hz = spline(time,negative_2Hz,0:.01:1);
+plot(0:.01:1,splined_neg2Hz,"-p")
+% Boom. It's "NEGATIVE" 2 Hz. The "positive" 14 Hz sinusoid and the
+% "negative" 2 Hz sinusoid are indistinguishable from each other. And,
+% since our Nyquist rate is 8 Hz, the Fourier transform doesn't return
+% Fourier coefficients for 14 Hz, it returns it as coefficients of a
+% /negative/ (inverted) version of a 2 Hz kernel. That's because it can't 
+% test the former, but can test the latter. In fact, it already did in all our
+% previous examples of the Fourier transform. But how's that possible? We
+% tested 0 Hz, 1 Hz, 2 Hz, and so on. We didn't ask for -1 Hz, -2 Hz, and
+% whatnot. Did we? Well actually, we kinda did.
+clear all; close all; clc
+
+% Take another look at this animation from an earlier chapter. We'll plot
+% it twice.
 addpath '/Users/hamid/Desktop/Research/+Tutorials/ANTSD'
-ANTSD_animatedwaves(1)
-% As we move around the cirle in a COUNTER-CLOCKWISE fashion, the sine and
-% cosine wave both start out positive. But now imagine moving in the
-% CLOCKWISE direction. This doesn't change anything for the cosine, but the
-% sine wave is now flipped - starting out negative. The sine wave is now..
-% a mirrored image of itself when moving in the counter-clockwise
-% direction.
+ANTSD_animatedwaves(1) % First one
+figure; ANTSD_animatedwaves(-1) % Second one
+% The second version, where we flip the sign of the argument, inverts the
+% motion: this means that the rotation in the top left corner is now
+% moving clockwise in the second figure, whereas it was moving
+% counter-clockwise in the first. In the top right, we see that the sine
+% wave is now inverted. Plotted alongside each other, in the bottom right,
+% we now have the two waves 90 degrees apart (just like before), but ALSO
+% with the cos() going positive and the sin() going negative at the start
+% of the sinusoids. Notice again that inverting our direction of motion
+% doesn't change anything for the cosine, only for the sine wave.
 %           When we perform a Fourier transform, you'll have noticed, that
 % we end up with complex coefficient. That's the numbers in the form a + bi
 % where the 'a' represents the cosine component and the 'bi' represents the
-% sine component. Here's the thing: we DID move along the unit circle in
-% the clockwise manner, creating a mirrored sine wave. Moving in this
-% direction, at a given frequency, is called the 'negative' frequency,
-% whereas moving around the circle in a typical, counter-clockwise manner
-% is called a 'positive' frequency. It's like we're taking the sine wave,
+% sine component. Here's the thing: when we did the Fourier transform, we 
+% didn't move in a counter-clockwise manner; we moved along the circle in
+% the clockwise manner, creating a flipped sine wave. Therefore, moving 
+% clockwise, at a given frequency, we actually DID create (and test) a
+% negative frequency after all! For any given kernel's frequency, we are
+% creating a positive version but also an orthogonal (90 degrees out of phase)
+% and negative (inverted) version of the wave. Recall how we make the
+% sinusoid of our kernel (the corkscrew):
+%      exp(-1i*2*pi*(fi-1).*time);
+% The negative sign makes things move in the clockwise direction. And, as a
+% consequence, the i*sin() term gets inverted, but the cos() doesn't.
+% Look at the corkscrews again, first without the negative sign
+clear all; close all; clc
+
+freq=3; theta = 0: pi/100 : 2*pi;
+
+z = exp(1i*theta*freq); % Counter-clockwise
+figure; comet3(real(z), imag(z), theta)
+xlabel('Real(z)'), ylabel('Imag(z)'), zlabel('Angle (radians)')
+
+% Change to the following view:
+view([90 0]) % x: Imaginary, y: Angle (sine view)
+%view([0 0])  % x: Real, y: Angle  (cosine view)
+
+z = exp(-1i*theta*freq); % Clockwise
+figure; comet3(real(z), imag(z), theta)
+xlabel('Real(z)'), ylabel('Imag(z)'), zlabel('Angle (radians)')
+
+% Change to the following view:
+view([90 0]) % x: Imaginary, y: Angle (sine view)
+%view([0 0])  % x: Real, y: Angle  (cosine view)
+
+% Compare the sine views of both the figures. You'll see they're inverted
+% versions of each other. You can close the figures and rerun the above
+% code again, but now changing the perspective to see the cosine instead.
+% You'll see that the cosine indeed remains unaffected. Also look at the
+% corkscrews in 3D, the difference in the direction should be clear.
+clear all; close all; clc
+
+%% Fourier Transform (part II)
+% Okay, so now we know the basics behind our complex ('corkscrew') kernel,
+% the cosine componenet mapping onto the real line and the sine onto the
+% imaginary line, and the various reasons for us to talk about negative
+% frequencies (inverting the sine by rotating in the clockwise direction on
+% the complex plane, the aliasing of frequencies above the Nyquist rate and
+% the mirorring on the power spectrum).
+
+% Now we take a given complex kernel and convolve it with our real
+% (meaning, no imaginary part) data. And because convolution is a form of
+% multiplication, we are multiplying real numbers with complex numbers..
+% resulting in a complex numbered output. That's why our Fourier
+% coefficients are complex.
+
+
+
+
+
+
+
+
+
+
+
+%% The FAST Fourier Transform
+% So far, we talked about the Fourier transform. With all the convolving
+% that's going on, we are performing A LOT of computations. And if you have
+% a big data set, this means running a Fourier transform is gonna take A
+% LOT of time. But that's only if you run the 'slow' version (which we
+% discussed so far). There's actually a /fast/ version of the transform:
+% the Fast Fourier Transform (FFT). And since there's no reason the run a
+% slow version in practice (only for educational purposes, like we did so
+% far), the FFT is now synonymous with 'Fourier transform'. In practice,
+% when people talk about Fourier transforms, odds are they're talking about
+% the /fast/ version.
+
+
+
+
+
+
+%% Notes
+
+% It's like we're taking the sine wave,
 % at a certain frequency, and then flipping its sign - hence, negative
 % frequency. But here's the brilliance in that: to create a sinusoid, we
 % need to add the cosine and (now mirrored) sine components together,
@@ -3213,6 +3503,313 @@ xline(0,'LineWidth',3)
 
 
 
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                        %
+%%                               CHAPTER 18.                              %
+%%                                                                        %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% We now know how to plot a lot of different things using a lot of
+% different methods. But, that doesn't get us very far if we can't link it
+% to e.g. task events. So, now let's look at how we can transform our data
+% to get it ready for proper visual inspection and quantitative statistical
+% analysis.
+
+% Remember the time-frequency power plots from the previous chapter? They
+% were kinda difficult to interpret, because the frequency spectrum of data
+% tends to show decreasing power at higher frequencies. This is the case
+% for many signals, not just EEG data. In fact, that decrease follows a
+% so-called "1/f" (1-over-f) shape, as shown in Figure 18.1. The more
+% general form of that expressions is "c/f^x", where c is a constant and x
+% is an exponent (both are equal to 1 in Figure 18.1). This is also
+% referred to as a "power law" (with 'power' referring to the exponent, not
+% the other kind of power that we extract with Fourier transforms).
+%           The 1/f phenomenon means there are (at least) 5 important
+% hurdles when it comes to working with and interpreting time-frequency
+% data. First, it make visualizing power difficult over a large range of
+% frequencies. Second, it makes it difficult to quantitatively compare
+% power across frequencies. Third, it makes it difficult to aggregate
+% effects across participants. Fourth, it makes it difficult to disentangle
+% task-related activity from background noise. Fifth, raw power values are
+% not normally distributed, because they cannot be negative, and they are
+% strongly positively skewed. Some of these problems are visualized in
+% Figure 18.2.
+%           But, we can address all five of the aforementioned issues that
+% come with raw power values. The solution is to use one of several kinds
+% of baseline normalization, which each share all the following four
+% advantages. They put all power values on the same scale, disentangle
+% task-related dynamics from background noise, transform everything into a
+% common and easily numerically interpretable metric, and allow for
+% parametric statistics because baseline-normalized data are often normally
+% distributed.
+
+% We'll learn about 3 baseline normalization procedures: decibel
+% conversion, percentage change and baseline division, and the z-transform.
+
+
+
+%% Decibel conversion
+% The decibel (dB) is a ratio between the strength of one signal
+% (frequency-band-specific power) and the strength of another signal (a
+% baseline level power in the same band). The base unit, bel, is the
+% logarithm of that ratio. Typically, tens of bels are used, hence decibel.
+
+% dB_f = 10 * log10 (activity_tf / mean(baseline_f))
+
+% Choosing your baseline is obviously nontrivial here and there are a few
+% things to keep in mind (discussed in a little bit). For now, just think
+% of a baseline as a period of time where no task-related activity is
+% expected, such as -500 to -200 ms before trial onset.
+%           Be sure to first compute trial-average power and only then
+% transform to decibels. Additionally, be sure to use symmetric color
+% scaling (e.g., -3 to +3, rather than -1 to +5), unless there is something
+% highly specific you want to highlight in the plot.
+
+%% Percentage change and baseline division
+% Similar to decibels, results can also be interpreted as change in power
+% /relative/ to some baseline, but now in percentages and without the log
+% transform.
+
+% percentchange_tf = 100 * (activity_tf-mean(baseline_f)) / mean(baseline_f)
+
+%% The Z-transform
+% With the z-transform, power is scaled to standard deviation units. You're
+% probably familiar with z-scoring from statistics - this is similar,
+% except instead of a z-transform relative to the mean, we are transforming
+% relative to some baseline.
+
+% Z_tf = (activity_tf - mean(baseline_f) / sqrt(1/n * sum(baseline_tf - mean(baseline_f)^2)
+% ..where n = number of data points in the baseline period
+
+% The resulting z-scores can easily be interpreted and converted to
+% p-values (e.g., Z = 1.96 corresponds to a two-tailed p = .05).
+
+
+
+% Note that, the first two methods are built on the mean(baseline) of the 
+% data, whereas the z-transform also takes the standard deviation into
+% account. This can be a good thing.. or a bad thing. If there is a lot of
+% noise in some frequency bands (e.g. because of a low number of trials),
+% the estimate of the deviation is going to be noisy too. Although
+% different baseline transformation should yield /similar/ results, they
+% will not necessarily be identical. So, not all transforms are equal and
+% you can't 'just use any one of them' without thinking things through.
+
+
+
+
+
+%% Exercises
+
+load sampleEEGdata
+
+% 18.16.1
+% Select three frequency bands and compute time-varying power at each
+% electrode in these three bands, using either complex wavelet convolution
+% of filter-Hilbert. Compute and store both the baseline-corrected power
+% and the raw non-baseline-corrected power. You can choose which time
+% period and baseline normalization method to use.
+
+% Frequencies of Interest
+min_freq = 2;
+max_freq = 128;
+num_frex = 30;
+frequencies = logspace(log10(min_freq),log10(max_freq),num_frex);
+
+% Params
+time = -1:1/EEG.srate:1;
+half_of_wavelet_size = (length(time)-1)/2;
+
+% Baseline period
+baselinetime = [-500 -200]; % in ms
+[~,baselineidx(1)] = min(abs(EEG.times-baselinetime(1)));
+[~,baselineidx(2)] = min(abs(EEG.times-baselinetime(2)));
+
+% FFT parameters (use next-power-of-2)
+n_wavelet     = length(time);
+n_data        = EEG.pnts;
+n_convolution = n_wavelet+n_data-1;
+n_conv_pow2   = pow2(nextpow2(n_convolution));
+wavelet_cycles= 4;
+
+% Initialize output time-frequency data
+tf_data = zeros(length(frequencies),EEG.pnts,EEG.nbchan);
+
+% Time-frequency matrix
+for elec=1:EEG.nbchan
+
+    % FFT of data
+    fft_data = fft(squeeze(EEG.data(elec,:,1)),n_conv_pow2);
+
+    for fi=1:length(frequencies)
+
+        % FFT of wavelet
+        wavelet = (pi*frequencies(fi)*sqrt(pi))^-.5 * exp(2*1i*pi*frequencies(fi).*time) .* exp(-time.^2./(2*( wavelet_cycles /(2*pi*frequencies(fi)))^2))/frequencies(fi);
+        fft_wavelet = fft(wavelet,n_conv_pow2);
+
+        % Convolve
+        convolution_result_fft = ifft(fft_wavelet.*fft_data,n_conv_pow2);
+        convolution_result_fft = convolution_result_fft(1:n_convolution); % note: here we remove the extra points from the power-of-2 FFT
+        convolution_result_fft = convolution_result_fft(half_of_wavelet_size+1:end-half_of_wavelet_size);
+
+        % Put power data into time-frequency matrix
+        tf_data(fi,:,elec) = abs(convolution_result_fft).^2;
+    end
+end
+
+% Average across electrodes
+df.timefreq = mean(tf_data,3);
+
+% Plot raw TF map
+figure
+contourf(EEG.times,frequencies,10*log10(df.timefreq),'linecolor','none')
+xlabel('Time (ms)'), ylabel('Frequency (Hz)'), title('Raw (10*log10(data)')
+xline(0,'LineWidth',5,'Color','white')
+
+% dB-correct
+baseline_power = mean(df.timefreq(:,baselineidx(1):baselineidx(2)),2);
+df.dbconverted = 10*log10(bsxfun(@rdivide,df.timefreq,baseline_power));
+
+% Plot baselined TF map
+figure
+contourf(EEG.times,frequencies,df.dbconverted,'linecolor','none')
+xlabel('Time (ms)'), ylabel('Frequency (Hz)'), title('Baselined (10*log10(data)')
+xline(0,'LineWidth',5,'Color','white')
+
+% 18.16.2
+% Select five time points and create topographical maps of power with and
+% without baseline normalization at each selected time-frequency point. The
+% color scaling should be the same for all plots over time within a
+% frequency, but the color scaling should be different for with versus
+% without baseline normalization and should also be different for each
+% frequency.
+
+do.average = 1;
+t = 89; % Trial to use (solutions appear to be trial 89 or 69)
+stfft_raw = zeros(EEG.nbchan,5); % Initialize final array (4 columns: 0ms, 100ms, 200ms, 300ms, 400ms)
+stfft_bslnd = zeros(EEG.nbchan,5); % Initialize final array (4 columns: 0ms, 100ms, 200ms, 300ms, 400ms)
+counter = 0; 
+for ttime = [0 100 200 300 400] % target time
+    for tfreq = 6 % target frequency
+        warning('off','all')
+
+        % Counter for output array column index
+        counter = counter + 1;
+
+        for elec = 1:EEG.nbchan
+
+            % Recall, lower frequencies require longer segments, where higher
+            % frequencies allow for shorter segments.
+            % For example, if we want to estimate 6 Hz power, the window should at least be (1000/6
+            % =) 166.7 ms long and ideally 2-3 times that (x3 = 500 ms)    
+            timewin = round((1e3/tfreq)*3,-2); % Round to nearest hundred
+
+            timewinidx = round(timewin/(1e3/EEG.srate)); % So I need 128 data points to get a 500 ms window
+            [~,targettimeidx] = min(abs(EEG.times-ttime)); % The time point 150 ms is found at index 295
+            starttime = targettimeidx-(timewinidx/2); % If we put the target time in the center of the window, this is where the window starts
+            endtime = targettimeidx+(timewinidx/2); % This is where the window ends
+            % This should now constitute a ~500 ms window, with our target time of 150
+            % ms post stimulus onset at the center of that window
+
+            % Taper
+            taper = .5*(1-cos(2*pi*(0:timewinidx-1)/(timewinidx-1))); % Hann
+            %taper = .54 - .46*cos(2*pi*(0:timewinidx-1)/(timewinidx-1)); % Hamming
+            %taper = exp(-.5*(2.5*(-timewinidx/2:timewinidx/2-1)/(timewinidx/2)).^2); % Gauss
+
+            % Detrend the chosen trial at current electrode
+            d = detrend(EEG.data(elec,:,t));
+
+            % Tapered, detrended EEG data
+            dtap = d(starttime:(endtime-1)).*taper;
+
+            % Plot
+            %timevec = floor(EEG.times(starttime)):1e3/EEG.srate:ceil(EEG.times(endtime-1));
+            %plot(timevec,d(starttime:(endtime-1))); xlim([floor(EEG.times(starttime)) ceil(EEG.times(endtime-1))])
+            %hold on; plot(timevec,dtap,'r'); xline(ttime,"LineWidth",3); title('One short-time window of data, windowed')
+
+            % Run FFT on the short-time dtap
+            dfft = fft(dtap)/timewinidx;
+
+            % Frequencies returned by fft()
+            f = linspace(0,EEG.srate/2,floor(length(taper)/2)+1);
+            [~,targetfreqidx] = min(abs(f-tfreq)); % The target frequency is at f(4)
+
+            % The entire power spectrum
+            %plot(f,abs(dfft(1:floor(length(taper)/2)+1)).^2,'.-');
+            %title('power spectrum from that time window'); xline(tfreq)
+
+            % Save power result for the current electrode
+            if (do.average) % Average results with neighboring frequencies
+                stfft_raw(elec,counter) = mean(abs(dfft(targetfreqidx-1:targetfreqidx+1)).^2);
+            else
+                stfft_raw(elec,counter) = abs(dfft(targetfreqidx)).^2;
+            end
+        end
+    end
+end
+warning('on','all')
+
+% Topoplots
+raw_cbar = [-5 3]; bslnd_cbar = [-2 2];
+
+figure
+subplot(251)
+cbar_range = raw_cbar; % Range of our colorbar
+topoplot(stfft_raw(:,1),EEG.chanlocs); colorbar; caxis(cbar_range); title("Raw power at 6Hz, 0ms")
+
+subplot(252)
+cbar_range = raw_cbar;
+topoplot(stfft_raw(:,2),EEG.chanlocs); colorbar; caxis(cbar_range); title("Raw power at 6Hz, 100ms")
+
+subplot(253)
+cbar_range = raw_cbar;
+topoplot(stfft_raw(:,3),EEG.chanlocs); colorbar; caxis(cbar_range); title("Raw power at 6Hz, 200ms")
+
+subplot(254)
+cbar_range = raw_cbar;
+topoplot(stfft_raw(:,4),EEG.chanlocs); colorbar; caxis(cbar_range); title("Raw power at 6Hz, 300ms")
+
+subplot(255)
+cbar_range = raw_cbar;
+topoplot(stfft_raw(:,5),EEG.chanlocs); colorbar; caxis(cbar_range); title("Raw power at 6Hz, 400ms")
+
+
+% Baseline
+baseline_power = mean(stfft_raw(:,1));
+
+subplot(256)
+cbar_range = bslnd_cbar;
+topoplot(stfft_raw(:,1)-baseline_power,EEG.chanlocs); colorbar; caxis(cbar_range); title("Baselined power at 6Hz, 0ms")
+
+subplot(257)
+cbar_range = bslnd_cbar;
+topoplot(stfft_raw(:,2)-baseline_power,EEG.chanlocs); colorbar; caxis(cbar_range); title("Baselined power at 6Hz, 100ms")
+
+subplot(258)
+cbar_range = bslnd_cbar;
+topoplot(stfft_raw(:,3)-baseline_power,EEG.chanlocs); colorbar; caxis(cbar_range); title("Baselined power at 6Hz, 200ms")
+
+subplot(259)
+cbar_range = bslnd_cbar;
+topoplot(stfft_raw(:,4)-baseline_power,EEG.chanlocs); colorbar; caxis(cbar_range); title("Baselined power at 6Hz, 300ms")
+
+subplot(2,5,10)
+cbar_range = bslnd_cbar;
+topoplot(stfft_raw(:,5)-baseline_power,EEG.chanlocs); colorbar; caxis(cbar_range); title("Baselined power at 6Hz, 400ms")
+
+
+% 18.16.3
+% Are there qualitative differences in the topographical distributions of
+% power with compared to without baseline normalization? Are the
+% differences more prominent in some frequency bands or some time points.
+% What might be causing these differences?
+
+
+% End of chapter 18
+clear all; close all; clc
 
 
 
