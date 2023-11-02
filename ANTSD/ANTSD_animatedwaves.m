@@ -1,10 +1,14 @@
 function ANTSD_animatedwaves(rotations)
 
 %% Variables
-theta = linspace(0,rotations*2*pi,50);
+theta = linspace(0,abs(rotations)*2*pi,50);
 r = 1; % radius of circle
 X = cos(theta);
-Y = sin(theta);
+if (rotations > 0)
+    Y = sin(theta);
+else
+    Y = -sin(theta);
+end
 
 %% Plot
 
@@ -40,16 +44,24 @@ for i = 1:(numel(theta)-1)
     % Plot 2nd graph
     subplot(2,2,2)
     % sine wave
-    ezplot( @(theta) sin(theta),[0 theta(i+1)]);
-    axis([0 rotations*2*pi -2 2]) % Set axis
+    if (rotations > 0)
+        ezplot( @(theta) sin(theta),[0 theta(i+1)]);
+    else
+        ezplot( @(theta) -sin(theta),[0 theta(i+1)]);
+    end
+    axis([0 abs(rotations)*2*pi -2 2]) % Set axis
     % Horizontal line
-    line([0 theta(i)],[sin(theta(i)) sin(theta(i))],'Color','r');
+    if (rotations > 0)    
+        line([0 theta(i)],[sin(theta(i)) sin(theta(i))],'Color','r');
+    else
+        line([0 theta(i)],[-sin(theta(i)) -sin(theta(i))],'Color','r');
+    end
 
     % Plot 3rd graph
     subplot(2,2,3)
     % cos wave
     ezplot( @(theta) cos(theta),[0 theta(i+1)]);
-    axis([0 rotations*2*pi -2 2]) % Set axis
+    axis([0 abs(rotations)*2*pi -2 2]) % Set axis
     % Horizontal line
     line([0 theta(i)],[cos(theta(i)) cos(theta(i))],'Color','r');
     view([90 -90])
@@ -57,10 +69,18 @@ for i = 1:(numel(theta)-1)
     % Plot 4th graph
     subplot(2,2,4)
     % sine and cos wave
-    plot(theta,sin(theta),theta,cos(theta),'Color','b');
-    axis([0 rotations*2*pi -2 2]) % Set axis
+    if (rotations > 0)
+        plot(theta,sin(theta),theta,cos(theta),'Color','b');
+    else
+        plot(theta,-sin(theta),theta,cos(theta),'Color','b');
+    end
+    axis([0 abs(rotations)*2*pi -2 2]) % Set axis
     % Horizontal line1
-    line([0 theta(i)],[sin(theta(i)) sin(theta(i))],'Color','r');
+    if (rotations > 0)
+        line([0 theta(i)],[sin(theta(i)) sin(theta(i))],'Color','r');
+    else
+        line([0 theta(i)],[-sin(theta(i)) -sin(theta(i))],'Color','r');
+    end
     % Horizontal line2
     line([0 theta(i)],[cos(theta(i)) cos(theta(i))],'Color','r');
 end
