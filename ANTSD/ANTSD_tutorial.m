@@ -1376,6 +1376,13 @@ legend('Signal','Trimmed Convolution'); title('Scaled with kern-scaled')
 % the signal that are also steadily decreasing (so the convolution is
 % highest, when the signal is going down).
 
+% To do a 'regular' Fourier transform, we're gonna be using the dot
+% product. When we get a little more advanced, convolution is gonna come
+% into play. So, don't be surprised when in Chapter 11, the focus is on
+% using a basic dot product; convolution (i.e., the sliding dot product)
+% will turn out to be useful when we run into a big limitation of the
+% regular Fourier transform.
+
 clear all; close all; clc
 
 %% Exercises
@@ -1534,7 +1541,42 @@ xlabel("Real(z)"); ylabel("Imag(z)")
 z = -2 - 1i;
 hold on; plot(real(z),imag(z),'+')
 
-% Alright, now let's plot a unit circle on the complex plane
+% At a deeper level, what the "meaning" of the imaginary unit i is really
+% about is that it's a 90 degree /rotation/. What do we mean by that?
+vec = [1 0];
+compass(real(vec),imag(vec))
+
+% When we multiply the (0,1) coordinates by i, here's what happens:
+vec = i*[1 0]; hold on
+compass(real(vec),imag(vec))
+% We've now rotated 90 degrees
+
+% We'll multiply by i /again/, so i * i * (1,0)
+vec = i*i*[1 0];
+compass(real(vec),imag(vec))
+% Another 90 degree rotation, so now 180 degrees relative to our start
+
+% You guessed it: i * i * i * (1,0)
+vec = i*i*i*[1 0];
+compass(real(vec),imag(vec))
+% Yup, 270 degrees
+
+% Think about it this way: if i = sqrt(-1), the first time we multiply a
+% real number (like 1) with i, we get 1i. Then, it's 1 * i * i, which is 1
+% * -1 (since sqrt(-1)*sqrt(-1) = -1). This means we're back on the real
+% number line, just pointing the opposite direction. Another multiplication
+% of i, means -1i. So we're on the imaginary line again, but on the
+% negative side. Finally, a fourth multiplication with i means -1 * i * i,
+% which equals -1 * -1, which is 1. And so, we're back to our starting
+% point on the real number line.
+
+
+% With that knowledge, that the unit i is about /rotation/, you can think
+% of sine and cosine as /fractions/ of a 90 degree rotation: instead
+% of doing a full 90 degree rotation, we only go part of that way. Of
+% course, there's an infinite number of partial steps we can take and,
+% ultimately, what that results in is a circle - a circle on the complex
+% plane with a certain radius:
 radius = 1;
 theta = 0: pi/100 : 2*pi;
 z = complex(radius * cos(theta), radius * sin(theta));
@@ -1543,6 +1585,12 @@ figure; plot(real(z),imag(z))
 grid on
 xlim([-2 2]); ylim([-2 2])
 xlabel("Real(z)"); ylabel("Imag(z)")
+
+% Of course, we only need to introduce the imaginary unit i /once/, as in:
+% cos(theta) + i * sin(theta)
+% We don't need to multiply things by i again and again. Instead, the signs
+% for the values coming out of cos(theta) and sin(theta) will flip as we
+% go through all various values of theta.
 
 % You can play around with the individual radii, creating an oval, for
 % example. These radii are gonna be important later. For now, just note
@@ -1622,28 +1670,32 @@ xlim([-2 2]); ylim([-2 2])
 xlabel("Real(z)"); ylabel("Imag(z)")
 % As you can see, we get the same result as before
 
-% So, what's with this number e? It's value is ~ 2.718281....
+% So, what's with this number e? Its value is ~ 2.718281....
 % You can change the base of the exponent, to something else. For example,
-% change it to 1, or 2, or 2.7 and see what happens to the circle:
-base = 5;
+% change it to 1, or 2, 2.7, or 5 and see what happens to the circle:
+base = 2;
 theta = 0: pi/100 : 2*pi; % In radians
 z = base.^(1i*theta); % Altered base of the exponential
 figure; plot(real(z),imag(z))
+%z = exp(1i*theta); % exp(), as it needs to be
+%figure; plot3(real(z), imag(z), theta)
 grid on
 xlim([-2 2]); ylim([-2 2])
 xlabel("Real(z)"); ylabel("Imag(z)")
 % It should be obvious, now, that when we use the number e, we create an
 % exactly full circle around the complex plane. Any number below e, doesn't
 % complete it fully. Any number above that will overshoot. You can try a
-% number above e and then plot the 3D plot below, to see that.
+% number above e and then plot the 3D plot, to see that, by uncommenting 
+% the relevant lines above. Then, when you rotate the 3D plot around,
+% you'll see that the exp() base results in one exact period of a sine and
+% cosine wave (depending on your perspective).
 
 % Reset z to be created with the number e, if you want to proceed with the
 % tutorial. Or, change the base above to something else to see why we need
 % the base to be e.
 z = exp(1i*theta);
 
-% Okay, but now look at this. Instead of plotting it in 2 dimensions, we'll
-% plot our 'circle' in 3 dimensions:
+% If you didn't do the 3D above, we'll do it now. Look at this:
 figure
 radius=1;
 plot3(radius*real(z), radius*imag(z), theta,'-','linew',3)
@@ -1737,14 +1789,25 @@ ANTSD_animatedwaves(1)
 % as.. lines that are orthogonal.
 clear all; close all; clc
 
-% The main 3 take-aways:
-% 1. We can move around the circle/corkscrew in two directions
+% The main take-aways:
+% 1. We can move around the circle in two directions
 % counter-clockwise [ exp( 1i*theta*freq) ] or.. 
 % clockwise         [ exp(-1i*theta*freq) ]
-% 2. Often, this difference is what is meant with 'negative frequency' -
-% the movement around the corkscrew in a clockwise manner. There are other
+% Where we are on the circle depends on the angle theta. But if we plot out 
+% all possible angles and visualize the result, we see a corkscrew. The
+% specific angle we're on is a function of time and how fast we move around
+% the circle (which is expressed through frequency).
+% 2. The difference between clockwise or counter-clockwise motion is bound
+% to the concept of 'negative frequency'. Flipping the sign in the exponent
+% flips the direction of motion around the circle (such that you are now
+% moving in a clockwise manner rather than counter-clockwise). There are other
 % ways to think about 'negative frequency', but this is one of 'em.
-% 3. For a complex number, we have a real part and an imaginary part.
+% 3. The imaginary unit 'i', which is sqrt(-1), is really about a 90 degree
+% rotation. And we can scale that rotation by multiplying it with another
+% number that represents an angle - resulting in a /partial/ 90 degree
+% rotation. By sweeping across tons of those angles, we draw out a
+% circle on the complex plane.
+% 4. For a complex number, we have a real part and an imaginary part.
 % Similarly, when moving around the complex plane in a circle, the cos()
 % maps onto the real line and the i*sin() maps onto the imaginary line.
 % These two lines are orthogonal and, accordingly, cos() and sin() are also
@@ -1835,16 +1898,16 @@ clear all; close all; clc
 % samples of that continuous signal with a certain sample rate. In fact,
 % because our data are /sampled/, rather than continuous, we can perform
 % the computations very quickly. So, in many ways, it actually helps us
-% out, to the point where nowadays this 'fast' version of the Fourier
-% transform is considered to be 'the' Fourier transform (because why would
-% you go for the slower version?).
+% out, to the point where nowadays this 'fast' version of the discrete 
+% Fourier transform is considered to be 'the' Fourier transform (because 
+% why would you go for the slower version?).
 
 % Before we start, what's a 'transform'? It's like a function, which takes
 % an input value and produces an output value: a transform takes a /set/ of
 % input values and produces a /set/ of output values. The way a function
 % takes you from a number to a number, a transform takes you from one
 % function to another function. I mean, okay - this still feels very vague 
-% and imprecise, but that definition is sufficient, in case you were
+% and imprecise, but it's sufficient for our purposes, in case you were
 % wondering why it's Fourier /transform/ instead of Fourier /function/.
 % Eventually, our goal will be to go from a polynomial function to another
 % polynomial function. But to get us started, let's just look at 'going
@@ -1918,7 +1981,7 @@ end
 % how each of the kernels are reflected in the signal. But.. this isn't
 % what we would actually do in practice. There are some problems you might
 % have already guessed:
-% How would I pick the frequencies to test? There's endless many of them,
+%      How would I pick the frequencies to test? There's endless many of them,
 % literally! Because there are infinite integers to pick (0 Hz, 1 Hz, 2
 % Hz.. 10000000 Hz, and so on), let alone infinite non-integer frequencies
 % (0.5 Hz, 1.490783 Hz, 99.90903472 Hz, pi Hz, and so on). And even if you 
@@ -1943,14 +2006,14 @@ hz = linspace(0,srate/2,floor(length(time)/2)+1);
 % want to include the DC component, we go from 0 to the Nyquist frequency 
 % in (n_datapoints/2)+1 steps.
 %           This line of code, to get our tested frequencies, is not gonna
-% make sense to you just yet, but it will soon. Nevertheless, you should
-% click on the variable in your workspace and look at the numbers. It's a
-% list of 501 entries starting from 0 going up to 250 in linearly spaced
-% intervals .5 Hz. This is because we don't /actually/ have to test an
-% infinite number of frequencies. There /is/ a way to pick a finite set of
-% frequencies to test which will guarantee that we can reconstruct the
-% original signal using only the Fourier coefficients of each of these
-% tested 501 frequencies. For the moment, that's all you need to know.
+% make sense to you just yet, but it will in be explained in Fourier Transform
+% (part II). Nevertheless, you should click on the variable in your workspace 
+% and look at the numbers. It's a list of 501 entries starting from 0 going up 
+% to 250 in linearly spaced intervals .5 Hz. This is because we don't /actually/ 
+% have to test an infinite number of frequencies. There /is/ a way to pick a 
+% finite set of frequencies to test which will guarantee that we can 
+% reconstruct theoriginal signal using only the Fourier coefficients of each 
+% of these tested 501 frequencies. For the moment, that's all you need to know.
 
 % Plot the sine waves
 figure
@@ -1997,7 +2060,7 @@ end
 
 % Okay, so when we were plotting amplitudes, we made two important choices.
 % First, we only plotted /some/ of the Fourier coefficients (i.e., the
-% output of the transform as produced by fft(). In fact, we're plotting
+% output of the transform as produced by fft()). In fact, we're plotting
 % only the first half of the entire output. Second, the half that we're
 % plotting gets multiplied by 2 (except for the DC and Nyquist). Why?
 %           The frequency spectrum of a the signal is symmetrical around
@@ -2011,7 +2074,7 @@ end
 figure
 subplot(211)
 fullhz = linspace(0,srate,length(time));
-bar(fullhz,abs( f ))
+bar(fullhz,abs(f))
 ylim([0 1.5])
 % When we plot the entirety of our fft() output, we see that, towards the
 % end of our output, the pattern at the start is mirrored. Importantly,
@@ -2159,7 +2222,6 @@ figure; ANTSD_animatedwaves(-1) % Second one
 clear all; close all; clc
 
 freq=3; theta = 0: pi/100 : 2*pi;
-
 z = exp(1i*theta*freq); % Counter-clockwise
 figure; comet3(real(z), imag(z), theta)
 xlabel('Real(z)'), ylabel('Imag(z)'), zlabel('Angle (radians)')
@@ -2184,30 +2246,302 @@ view([90 0]) % x: Imaginary, y: Angle (sine view)
 clear all; close all; clc
 
 %% Fourier Transform (part II)
-% Okay, so now we know the basics behind our complex ('corkscrew') kernel,
-% the cosine componenet mapping onto the real line and the sine onto the
-% imaginary line, and the various reasons for us to talk about negative
-% frequencies (inverting the sine by rotating in the clockwise direction on
-% the complex plane, the aliasing of frequencies above the Nyquist rate and
-% the mirorring on the power spectrum).
+% We learned a lot so far: rotations around a circle using i, the number e, 
+% angles, positive and negative frequencies. But also: convolutions and dot
+% products as a measure of similarity, testing a given sinusoid (our 'complex
+% corkscrew kernel') against real data and being able to find out whether 
+% the sinusoid at that frequency is one of the constituent frequencies that 
+% are part of the real data and - if so - what its power and angle are, and 
+% aliasing of frequencies above the Nyquist rate and the mirorring on the 
+% power spectrum. And because convolution is a form of multiplication, our
+% resulting 'Fourier series' is a list 'Fourier coefficients' of complex numbers.
 
-% Now we take a given complex kernel and convolve it with our real
-% (meaning, no imaginary part) data. And because convolution is a form of
-% multiplication, we are multiplying real numbers with complex numbers..
-% resulting in a complex numbered output. That's why our Fourier
-% coefficients are complex.
+% Now let's see if we can go through an entire Fourier transform again, but
+% with a focus on a deeper level of understanding, now that some of the
+% basic concepts and mathematical objects we'll be using are familiar to us.
+
+% We'll start by simulating some data
+srate = 500;                    % Let's say we had a sampling rate of 500 Hz..
+n_sec = 10;                     % ..and that we have 10 seconds of data.
+n_datapoints = srate*n_sec;     % Then we have have this number of data points.
+time = linspace(0, n_sec, n_datapoints);  % Create discretized time line (i.e. time points at which we took a sample)
+data = .3 * sin(2*pi*time * 3.2 - (pi/2)) + 1.5;  % And here's our simulated signal
+plot(time,data,'.'); xlim([0 2]); ylim([0 3]) % We can plot the 2 seconds of data
+ylabel('Voltage (µV)'); xlabel('Time (s)')
+
+% Looking at the data, each dot is a sample. We're seeing 2 seconds of data
+% and a little over 6 periods of a signal. That should make sense, given that
+% the frequency of our simulated data is 3.2 Hz. So, in fact, what we're
+% actually seeing is 2 (seconds) * 3.2 (freq) = 6.4 periods of our signal.
+% The data are also shifted upward by 1.5, which is the constant we added. 
+% Finally, the amplitude around that constant of 1.5 does indeed look to be 
+% 0.3 (i.e., the peaks are at 1.8, troughs at 1.2). We are also moving the 
+% phase of the signal forward by pi/2; a sine wave starts at the 0 on the 
+% unit circle, which is the point halfway between the peak and trough in 
+% real data. In this case, that's 1.5. But because we shifted the phase, our 
+% data start at a trough. All in all, the simulated data look the way they 
+% should look given the parameters we set above.
+
+% Take another look at the animation if you're confused about the phase
+% shift. Look at the top right sin(theta) wave starting at zero. Imagine it
+% being shifted toward the right, such that the values that are currently
+% out of view (on the left) come into view. Those values are the ones we
+% are seeing on the right side of the curve (the trough). And because we
+% are shifting things by half of pi (which equals a quarter of the entire
+% period), our simulated data start at the trough.
+%ANTSD_animatedwaves(1)
+
+% Alright, let's apply a Fourier transform step-by-step to learn how we get
+% those parameters back. Let's visualize 'testing' to frequencies: 0 Hz and
+% 3 Hz. However, HEADS-UP: what we're doing in the next section is gonna
+% turn out to be slightly wrong! But we'll go into why that is the case.
+% But, based on what we've discussed so far, you may be tempted to think
+% this is how it's done. It's just gonna turn out that we're missing one
+% last critical component.
+
+% Make the kernel
+freq = 0;
+kernel = exp(-1i*2*pi* freq .*time);
+
+% Plot kernel and signal
+plot(time,kernel,'m'); hold on % Kernel in magenta
+plot(time,data,'b'); hold on % Signal in blue
+xlim([0 1]), ylim([0 3]), ylabel('Voltage (µV)'), xlabel('Time (s)')
+
+% Here we see 1 second of the 10 second signal with 1 second of the 10
+% second kernel.
+
+% Doing the dot product in this case is as simple as it gets: the
+% elementwise multiplication (i.e., data(t) * kernel(t) at each time point
+% t) results in the original data, because each point of the kernel is 1.
+% We then sum all those products and take the average, which - in this case
+% - is simply the average of the original data itself
+mean(data) % 1.4999
+sum(data .* kernel)/n_datapoints % 1.4999
+dot(data,kernel)/n_datapoints % 1.4999
+
+% What should be obvious is that, with a 0 Hz kernel (a.k.a. DC component), 
+% we are simply returning the average between the peaks and troughs of the
+% data signal, which corresponds to the offset from 0 Voltage line (some
+% constant shift up or down).
+
+% Okay, now let's make a 3 Hz kernel. It's about to get more complicated.
+freq = 3;
+kernel = exp(-1i*2*pi* freq .*time);
+
+% Plot kernel and signal
+close all
+plot3(time,real(kernel),imag(kernel),'m'); hold on % Kernel in magenta
+plot3(time,real(data),imag(data),'b'); hold on % Data signal in blue
+xlim([0 2]), ylim([-3 3]), ylabel('Voltage (µV)'), xlabel('Time (s)'), zlabel('Imaginary')
+
+% Move the plot around, as always, to see what's happening. We have our
+% kernel (the magenta corkscrew) winding itself around the the complex
+% plane over time, with its center on the real line's 0 (the 0 Voltage
+% point). When you look at the plot from the following view, you see that
+% the kernel rotates between -1 and +1 on both the real (voltage) and
+% imaginary line.
+view(90,0) % real, imaginary
+
+% But we're gonna look at this view:
+view(0,90) % time, real
+
+% Just like before, we're gonna multiply each data(t) with each kernel(t)
+% for all points t along the time axis. For instance, the first time point 
+% t is 0. For t=1, time(t)=0s, kernel(t) is 1.0000 + 0.0000i. For data(t) for
+% t=1, we get 1.2000. Looking at the furthest left point on the plot, this
+% should look correct: our magenta line starts at 1 and drops down, whereas
+% our blue line starts at (what looks like) 1.2 and then curves upward. And
+% if you rotate the plot manually a little, you can indeed see that the
+% kernel starts at 0i on the imaginary line. So 1 + 0i for kernel(1).
+%           Regardless, just like before, we perform an elementwise
+% multiplication between each point on the blue and magenta lines. But wait
+% a minute, the magenta line is complex: our blue line's value at
+% data(1)=1.2, but kernel(1)=1.0000 + 0.0000i. Well, naturally, we're just
+% gonna multiply 1.2 * 1.0000 + 1.2 * 0i. In other words, we distribute the
+% 1.2 over the real and imaginary parts (i.e.  a * (b + c) = a*b + a*c).
+%           Wait another minute, what happened to all that 'projection'
+% stuff that we talked about when learning about dot products? Well, we
+% /are/ currently looking at the projection of the kernel (assuming you're
+% still on view(0,90)): what we're looking at with view(0,90) IS a projection
+% of the complex kernel /onto/ the real numbers. Remember how I said a
+% projection is like a light shining from above /onto/ the vector we're
+% projecting onto? And how the projection of a vector is like the shadow
+% being cast by that light onto the other vector we're projecting onto?
+% We are viewing the kernel from a certain perspective and, if you pretend
+% that our view is a light, what we're seeing in that magenta line is the
+% shadow of the corkscrew onto the real number line. It IS the projection,
+% so now we just need to do the multiplication, element by element. And, if
+% you remember, the projection of a vector onto another vector is as simple
+% as taking the magnitude of the first vector into the dimension that the
+% other vector is in, a.k.a. the cosine into that dimension. In this case, 
+% we're projecting onto the real line, so we simply take the real part of
+% the kernel.
+dot(data,real(kernel))/n_datapoints % 2.4000e-04
+dot(data,imag(kernel))/n_datapoints % 2.5864e-16i
+% So, for 3 Hz, the resulting Fourier coefficients are:
+% 2.4000e-04 + 2.5864e-16i  ... right?
+
+% Okay, let's compare our outputs for 0 Hz and 3 Hz to Matlab's output for
+% fft(data), which is the fast Fourier Transform function
+matlab.fft = fft(data)/n_datapoints; % Fourier coefficients (i.e. average dot product)
+matlab.fft(1) % 1.4999 + 0.0000i
+% We know that the first tested sinusoid is always the 0 Hz, so that's the
+% first entry in our fft() output. Okay, so we got 1.4999 as our real number. 
+% And our 0 Hz kernel was just 1 at each time point, without an imaginary 
+% component. Or we could say that the imaginary component was 0 at each time 
+% point. And so, if we had an elementwise multiplication of our data with 
+% the imaginary part of our kernel, it would basically result be data .* 0i, 
+% meaning the dot product would average to 0i. And so, 1.4999 + 0i sounds right.
+
+% Okay, so if the first entry is the 0 Hz, surely the 3 Hz must then be the 4th
+% entry.
+matlab.fft(4) % -6.0532e-05 - 1.1410e-07i
+% That.. looks nothing like what we got above. What happened?
+
+% First, the tested frequencies returned by the Fourier transform are not
+% necessarily integer values starting from 0 (i.e., 0, 1, 2, etc.). Indeed,
+% take another look at Fourier Transform (part I) where we look at
+% fftshift() and so on. In that section, we defined a vector of resolved
+% frequencies as follows:
+%     hz = linspace(0,srate/2,floor(length(time)/2)+1);
+% This is indeed what the Fourier transform does.
+matlab.freqs = linspace(0,srate/2,floor(length(time)/2)+1); % the resolved frequencies
+% The first frequency resolved is, as always, still 0 Hz.
+matlab.freqs(1) % 0
+% Look at matlab.freqs, 3 Hz is the 31st entry. Where did this list come
+% from anyway. I mean, you can see how it's created above, but /why/ are
+% these the resolved frequencies? And also, when we do look at the correct
+% entry, the answer we got earlier is /still/ wrong. So, it's not like we
+% were simply looking in the wrong place.
+matlab.freqs(31) % 3
+matlab.fft(31) % -4.9393e-04 - 9.3115e-06i
+
+% One thing we haven't really covered yet is that the Fourier transform
+% treats the entire data signal as /one period/ of a signal that continues
+% indefinitely. So, we have a signal that starts at the first data point,
+% data(1) = 1.2, and continues n_datapoints to end on the value
+% data(end)=1.2. But, as far as the transform is concerned, data(end+1)..
+% is the same as data(1). And data(end+2) == data(2). And naturally, if we
+% could go back from data(1) to data(0), it would equal data(end) and
+% data(-1) == data(end-1). The signal just repeats and repeats and repeats
+% and we're just looking at one full period that happens to have
+% n_datapoints. Why does it treat the signal this way? Well, we /must/ --
+% if we are to transform a signal into sums of /periodic/ sinusoids (which 
+% is what the Fourier transform does).. then we must by definition treat the 
+% original signal as periodic, as well. In practice, this doesn't really
+% change all that much on our end, though. Except..
+%           This presents us with a little problem: our data represent one
+% period, but our kernel of e.g. 3 Hz repeats many, many times over the
+% course of the signal's "single period". We should probably create a kernel
+% that also has a single period over the entire time window of the recording,
+% right? That'd be a good start. Let's see how we can do that.
+
+% Original kernel
+subplot(211)
+freq = 3;
+true_time = linspace(0, n_sec, n_datapoints);  % Original, 'true' time line
+kernel = exp(-1i*2*pi* freq .*true_time);
+plot3(true_time,real(kernel),imag(kernel),'m'); hold on % Kernel in magenta
+plot3(true_time,real(data),imag(data),'b'); hold on % Data signal in blue
+
+% What we want is to stretch that corkscrew out, such that we see 3 full
+% periods - no more, no less - over the 10 second period. Because we have 3
+% periods per second (i.e. 3 Hz), we now have 30 periods for the 10
+% seconds. So, we need to divide by the number of seconds in our data to
+% get to 3 periods over 10 seconds.
+subplot(212)
+kernel_adjusted_time = ((1:n_datapoints)-1)/n_datapoints;
+kernel = exp(-1i*2*pi* freq .* kernel_adjusted_time);
+plot3(true_time,real(kernel),imag(kernel),'m'); hold on % Kernel in magenta
+plot3(true_time,real(data),imag(data),'b'); hold on % Data signal in blue
+
+% Okay, easily done! We took our original time vector and re-defined it so
+% that we're "pretending" our first sampled time point is 0 sec and the last
+% sampled time point from our data is /right before/ 1 sec. Why right
+% before? Well, a sample taken /at/ t=1 sec would be considered part of the
+% start of the /next/ 1 second period. So, we're not including that.
+% Another way to think about it. Our sample rate is 1 sample each .002
+% seconds. So, imagine we press start on our system to record.. the first
+% sample would be recorded at .002 seconds into the recording. But we're
+% labeling our first sample as t=0, meaning everything was shifted forward
+% in time by .002. That means our last sample will be at 1-.002, which is
+% at t=0.998s. But that's only if we have 1 seconds of data. We, instead,
+% have 10 seconds of data. Which means that we're not taking steps of .002
+% seconds, we're taking steps that are 10 times as slow, so .0002. Hence,
+% our kernel_adjusted_time vector starts at 0, takes steps of .0002, and
+% ends at .9998.
+
+% And now..
+dot(kernel,data)/n_datapoints
+% -6.0532e-05 + 1.1410e-07i
+
+% Alright.. wait. The 31st entry from Matlab's fft(), which corresponds to
+% the 3 Hz freq, was  -4.9393e-04 - 9.3115e-06i
+% Still not right?!
+
+% But take a look at this:
+matlab.fft(4) % -6.0532e-05 - 1.1410e-07i
+
+% Well, well, well! Our result matches the 4th result of fft(). That's..
+% something! Here's the last missing piece of the puzzle. Take another look
+% at the bottom plot of the figure we made above. The 'true' length of time
+% (so not the kernel_adjusted_time) is still 10 seconds; we simply
+% performed a little mathematical trick to stretch the kernel out. But our
+% stretched-out 3 Hz kernel isn't /really/ 3 Hz anymore, because it's got 3
+% periods /over the course of 10 seconds/ and not 1 second. This means that
+% true frequency of our stretched-out kernel is actually 3/10 Hz, so .3 Hz.
+% Take a look at the fourth entry of matlab.freqs.
+matlab.freqs(4) % 0.3000
+% A-ha! Now it's (hopefully) all starting to make sense!
+
+% The 'freq' value we were entering into the kernel (e.g. freq=0, freq=3,
+% etc.) are frequencies our kernel was building in relation to /1 second/
+% and not in relation to the number of seconds in our actual data. And so,
+% with 10 seconds of data, freq=3 produced a kernel with 30 periods.
+% However, the Fourier transform tests sinusoids that have periods /in
+% relation to the entire data/. So, first it starts with a sinusoid of 0 Hz
+% /over the entire data/ and then a sinusoid with 1 period /over the entire
+% data/, and then a sinusoid with 2 periods /over the entire data/, and the
+% fourth sinusoid has 3 periods /over the entire data/. But that fourth
+% sinusoid having 3 periods doesn't mean it's 3 Hz. It needs to be adjusted
+% based on the number of seconds in the data. And it also means that
+% labeling that variable 'freq' is a misnomer. Instead, what you'll often
+% see, is that that variable is simply labeled 'k'.
+% So, it should actually be something like:
+%      k = 3;
+%      kernel = exp(-1i*2*pi* k .* kernel_adjusted_time);
+% And the k's getting tested run from k=0, k=1, k=2, ... k=n_datapoints-1
+% And then, the (k+1)-st/th entry in our fft() output corresponds to the Fourier
+% coefficients of a "true frequency" of k/n_sec. So, k=0 tests 0/10=0, k=1
+% tests the true frequency 1/10=.1, and so on all the way to k=4999 testing
+% frequency 499.9000. However, as we learned previously, any frequencies
+% above our Nyquist rate are 'negative' or aliasing frequencies. Thus,
+% although Matlab's fft(data) with data that has 5000 samples returns 5000
+% coefficients, only half-plus-1 (i.e., 0 plus all the frequencies up to
+% 250 in steps of .1) of those are frequencies we need. So, we end up with
+% 2501 coefficients of interest. Hence:
+%      matlab.freqs = linspace(0,srate/2,floor(length(time)/2)+1); % the resolved frequencies
+% That sets up a vector from 0 to our Nyquist rate where the vector length
+% equals the (number of data points/2) + 1.. so, 2501 frequencies we could
+% /actually/ test. And those frequencies run from 0, .1, .2, .3, .. 250 Hz,
+% which is our Nyquist rate.
+
+% Alright. That.. was a lot! But that covers /all/ of the regular Fourier
+% transform. There's still the /fast/ version, which does all of this
+% slightly differently and more efficiently, hence the name. However, in
+% practice you will only be running the fast version (which is why we've
+% been comparing our steps to the output of fft()) and the output of fft()
+% should now be clear to you. Even if fft() /technically/ arrives at its
+% output slightly differently than we did (by setting up a kernel, computing 
+% the dot product, and moving to the next kernel, all the way till the
+% n_datapoints-minus-1th kernel), the final output IS THE SAME. If you want
+% to learn about how the transform is done in a /fast/ way, proceed to the
+% next section. If all you care about is /interpreting the output/ of a 
+% Fourier transform, then you can skip the next section.
 
 
-
-
-
-
-
-
-
-
-
-%% The FAST Fourier Transform
+%% The FAST Fourier Transform (optional)
 % So far, we talked about the Fourier transform. With all the convolving
 % that's going on, we are performing A LOT of computations. And if you have
 % a big data set, this means running a Fourier transform is gonna take A
@@ -2575,11 +2909,37 @@ title('Phase spectrum derived from discrete Fourier transform')
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%                                                                         %
-%                               CHAPTER 12.                               %
-%                                                                         %
+%%                                                                        %
+%%                               CHAPTER 12.                              %
+%%                                                                        %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% There are two limitations of the Fourier transform: changes in the
+% frequency structure /over time/ are hard to visualize, and EEG data
+% violate the stationarity assumption of Fourier analysis. However, there's
+% a way to deal with these problems: Morlet wavelet convolution.
+
+% As we saw in the previous chapter, the Fourier transform doesn't make use
+% of kernels that are /temporally local/. We stretched the entire kernel
+% out over the entire signal and treated that length as one period. This
+% means that we only get e.g. a single measure of power for a tested 
+% frequency to represent the entire signal. But what if power /changes/
+% over time? The Fourier transform wouldn't be able to pick up on a change
+% like that. Additionally, when we look locally, the assumption of 
+% stationarity is more likely to be met. So, we need a /local/ approach.
+
+% A Morlet wavelet is a sine wave windowed with a Gaussian to eliminate
+% edge artifacts. There are many kinds of wavelets and a Morlet is just one
+% of 'em. Wavelets must have values at or close to zero on both ends and
+% their mean value must also be zero. We're only gonna be looking at
+% Morlets in this entire tutorial.
+
+% There are limitations to wavelets:
+% 1. You cannot use a frequency slower than your epoch. If your epoch is 1
+% second, you cannot test frequencies below 1 second.
+% 2. The frequency cannot be above the Nyquist.
+% 3. Because of time-frequency precision trade-offs, frequencies close
+% together will produce similar results.
 
 
 
