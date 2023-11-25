@@ -1,5 +1,5 @@
 # Source
-message("h.machinelearning.cost :: v0.1: 2023 Aug 8")
+message("h.machinelearning.cost :: v0.1: 2023 Nov 24")
 
 # Function
 h.machinelearning.cost <- function(x, y, w, b, model = "linear", lambda_w = 0, lambda_b = 0) {
@@ -10,7 +10,7 @@ h.machinelearning.cost <- function(x, y, w, b, model = "linear", lambda_w = 0, l
       x           : Predictive values (rows = examples, columns = features)
       y           : Predicted, target values (single vector/column)
       w,b (scalar): Model parameters  𝑓𝑤,𝑏(𝑥)=𝑤𝑥+𝑏 (with either single or multiple predictors 𝑤*𝑥)
-      model (char): Regression model, can be 'linear', 'logistic'
+      model (char): Regression model: 'linear', 'logistic'
       lambda_w    : Regularization parameter for feature coefficients w
       lambda_b    : Regularization parameter for b
     
@@ -42,10 +42,6 @@ h.machinelearning.cost <- function(x, y, w, b, model = "linear", lambda_w = 0, l
         cost_sum = cost_sum + error     # Add ith error to total cost sum
       }
       
-      # Regularization
-      reg_w_sum = reg_w_sum + w^2
-      reg_b_sum = reg_b_sum + b^2
-      
     }
     if (model == "logistic") {
       for (i in 1:n_examples) {
@@ -62,7 +58,8 @@ h.machinelearning.cost <- function(x, y, w, b, model = "linear", lambda_w = 0, l
     
     # Setup
     n_examples = dim(x)[1]
-    if (!is.data.frame(x) | !is.numeric(y) ) { stop("For multiple feature cost computation, x should be a data frame and y should be a numeric vector.") }
+    n_features = dim(x)[2]
+    if (!is.data.frame(x) | !is.numeric(y)) { stop("For multiple feature cost computation, x should be a data frame and y should be a numeric vector.") }
     
     # Compute sum of all errors
     if (model == "linear") {
@@ -73,10 +70,6 @@ h.machinelearning.cost <- function(x, y, w, b, model = "linear", lambda_w = 0, l
         error = (f_wb_i - y[i]) ** 2    # Error for ith example's predicted score
         cost_sum = cost_sum + error     # Add ith error to total cost sum
       }
-      
-      # Regularization
-      reg_w_sum = reg_w_sum + sum(w^2)
-      reg_b_sum = reg_b_sum + b^2
       
     }
     if (model == "logistic") {
@@ -89,9 +82,14 @@ h.machinelearning.cost <- function(x, y, w, b, model = "linear", lambda_w = 0, l
     }
   }
   
+  # Regularization
+  reg_w_sum = sum(w^2)
+  reg_b_sum = b^2
+  
   # Compute average total cost and return
-  if (model == "linear") { cost = cost_sum / (2*n_examples)}
+  if (model == "linear") { cost = cost_sum / (2*n_examples) }
   if (model == "logistic") { cost = cost_sum / n_examples }
+  
   reg_w = (lambda_w/(2*n_examples)) * reg_w_sum
   reg_b = (lambda_b/(2*n_examples)) * reg_b_sum
   

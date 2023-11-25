@@ -1,8 +1,8 @@
 # Source
-message("h.machinelearning.gradient :: v0.1: 2023 Aug 8")
+message("h.machinelearning.gradient :: v0.1: 2023 Nov 24")
 
 # Function
-h.machinelearning.gradient <- function(x, y, w, b, method = NULL, model = "linear") {
+h.machinelearning.gradient <- function(x, y, w, b, method = NULL, model = "linear", lambda_w = 0, lambda_b = 0) {
 
   "Compute the cost gradient of a regression.
   
@@ -11,7 +11,9 @@ h.machinelearning.gradient <- function(x, y, w, b, method = NULL, model = "linea
       y               : Predicted, target values (single vector/column)
       w,b (scalar)    : Model parameters  𝑓𝑤,𝑏(𝑥)=𝑤𝑥+𝑏 (with either single or multiple predictors 𝑤*𝑥)
       method (char)   : Method of computation
-      model (char)    : Regression model, can be 'linear', 'logistic'
+      model (char)    : Regression model: 'linear', 'logistic'
+      lambda_w        : Regularization parameter for feature coefficients w
+      lambda_b        : Regularization parameter for b
   
     Returns:
       dj_dw (scalar)  : The gradient of the cost w.r.t. the parameters w
@@ -68,8 +70,13 @@ h.machinelearning.gradient <- function(x, y, w, b, method = NULL, model = "linea
   }
   
   # Compute average over n_examples and return
-  dj_dw = dj_dw / n_examples 
+  dj_dw = dj_dw / n_examples
   dj_db = dj_db / n_examples
+  
+  # Regularization
+  for (i in 1:n_features) { dj_dw[i]  = dj_dw[i] + (lambda_w/n_examples) * w[i] }
+  dj_db = dj_db + (lambda_b/(n_examples)) * b
+  
   return(list(dj_dw, dj_db))
     
 }

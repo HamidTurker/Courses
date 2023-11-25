@@ -1,5 +1,5 @@
 # Source
-message("h.machinelearning.gradient_descent :: v0.2: 2023 Aug 6")
+message("h.machinelearning.gradient_descent :: v0.2: 2023 Nov 24")
 
 # Function
 h.machinelearning.gradient_descent <- function(x, y, w_init, b_init,
@@ -23,7 +23,7 @@ h.machinelearning.gradient_descent <- function(x, y, w_init, b_init,
       x                     : Predictive values
       y                     : Predicted, target values
       w_init,b_init (scalar): Initial values of model parameters
-      model (char)          : Regression model, can be 'linear', 'logistic'
+      model (char)          : Regression model: 'linear', 'logistic'
       alpha (float)         : Learning rate
       n_iters (int)         : Number of iterations to run gradient descent
       scale (bool)          : Scale the features? This is recommended (default = TRUE)
