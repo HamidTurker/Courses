@@ -25,6 +25,7 @@ h.machinelearning.gradient <- function(x, y, w, b, method = NULL, model = "linea
     
     # Setup
     n_examples = length(x)
+    n_features = 1
     dj_dw = 0
     dj_db = 0
     
