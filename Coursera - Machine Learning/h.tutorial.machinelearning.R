@@ -79,20 +79,19 @@ In 'Matlab, vector(1)'. But, in Python, it'd be 'vector[0]' to get the number 77
     target_set=training_set[,"price"]
     
     # Initialize parameters
-    #b_init = 785.1811367994083
-    #w_init = c(0.39133535, 18.75376741, -53.36032453, -26.42131618) # One for each feature, in order of columns in the features set
-    b_init = 0
-    w_init = c(0,0,0,0)
+    b_init = 785.1811367994083
+    w_inits = c(0.39133535, 18.75376741, -53.36032453, -26.42131618) # One for each feature, in order of columns in the features set
+    #w_inits = runif(length(features_set))
+    b_init = .1
+    w_inits = c(.1,.1,.1,.1)
     
     # Run gradient descent
     grad_desc = h.machinelearning.gradient_descent(x=features_set, y=target_set,
-                                                   w_init=w_init, b_init=b_init, 
-                                                   alpha=5e-7, n_iters=1000, 
+                                                   w_init=w_inits, b_init=b_init, 
+                                                   alpha=5e-7, n_iters=1000,
                                                    verbose=TRUE, search=FALSE, plot=TRUE, scale=FALSE,
                                                    max_iters=1e+10, conv_crit=1e-50, div_crit=1e+100,
                                                    searchspace=3, cost.method = NULL, gradient.method = NULL)
-    
-    
     
   }
   
@@ -502,7 +501,7 @@ Let's try fitting a non-linear curve. We'll start with a simple quadratic:  y = 
     # (the 'test set'). There's no point in testing a model on the same data it was trained on.
     
     # Also look at the following. We can plot the model with our found weights and bias.
-    plot(seq(.5,3,by=.5), (1 / (1 + exp(- (5.28123*training_set2$x1 + 5.07816*training_set2$x2 + -14.2224)))))
+    plot(seq(.5,3,by=.5), (1 / (1 + exp(- (5.28123*training_set2$x1 + 5.07816*training_set2$x2 + -14.2224)))), col=training_set2$c, pch=16)
     # As you can see, it has labeled the first three points as belonging to category 0 and the last three as belonging to category 1.
     
     
@@ -525,7 +524,7 @@ Let's try fitting a non-linear curve. We'll start with a simple quadratic:  y = 
     
     # Plot the fitted sigmoid
     # Logistic model: 1 / (1 + exp(- (w*x + b) ))
-    fitted_sigmoid = 1 / (1 + exp(- (2.18657*training_set1b$x + -5.16871) ))
+    fitted_sigmoid = 1 / (1 + exp(- (2.18657*training_set1a$x + -5.16871) ))
     "0.005659692 0.048239281 0.310973935 0.800751839 0.972816095 0.996871724"
     lines(training_set1a$x, fitted_sigmoid, pch = 18, col = "black", type = "b")
     lines(training_set1a$x, 2.18657*training_set1a$x + -5.16871, lwd=4) # We can even use the found weights on a linear line  
@@ -589,7 +588,6 @@ Let's try fitting a non-linear curve. We'll start with a simple quadratic:  y = 
     features_set=training_set3[,c("x1","x2","x1_2","x1_3","x2_2","x2_3")]
     target_set=training_set3[,"g"]
     
-    
     grad_desc = h.machinelearning.gradient_descent(x=features_set, y=target_set,
                                                    w_init=c(0,0,0,0,0,0), b_init=0,
                                                    alpha=.1, n_iters=1e4, 
@@ -636,10 +634,11 @@ Let's try fitting a non-linear curve. We'll start with a simple quadratic:  y = 
   
   # An example of over/underfitting with linear regression
   training_set4 <- data.frame(
-    x = c(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29)
+    x = 0:25
   )
-  for (i in 1:length(training_set4$x)) { training_set4$y[i] = (training_set4$x[i]+runif(1)*5)^2 }
-  plot(training_set4$x, training_set4$y, pch=16, xlim=c(0, 30), ylim=c(0, 1100))
+  for (i in 1:length(training_set4$x)) { training_set4$y[i] = (training_set4$x[i]+runif(1)*3)^2 }
+  # True model is quadratic with some noise
+  plot(training_set4$x, training_set4$y, pch=16, xlim=c(0, length(training_set4$x)), ylim=c(0, 1100))
   
   # Set up squared terms, cubed terms, and so on up until a 6th degree polynomial
   training_set4$x_2 = training_set4$x^2 # Squares
@@ -651,36 +650,23 @@ Let's try fitting a non-linear curve. We'll start with a simple quadratic:  y = 
   # Select however many of the features you wanna use
   features_set=training_set4[,c("x","x_2","x_3","x_4","x_5","x_6")]
   features_set=training_set4[,c("x","x_2","x_3")]
-  w_inits=c(.1,.1,.1) # Adjust length of vector based on number of features chosen
-  target_set=training_set4[,"y"]
+  features_set=training_set4[,c("x","x_2")]
+  w_inits=0 # If 1 feature
+  w_inits=runif(length(features_set)) # If >1 features
   
   # Fit
-  grad_desc = h.machinelearning.gradient_descent(x=features_set, y=target_set,
+  grad_desc = h.machinelearning.gradient_descent(x=features_set, y=training_set4[,"y"],
                                                  w_init=w_inits, b_init=0, 
-                                                 alpha=1e-5, n_iters=1e4, 
-                                                 div_crit = 1e+200, scale=T,
+                                                 alpha=1e-100, n_iters=1e4, 
+                                                 div_crit = 1e+2000, scale=F,
                                                  verbose=T, search=F, plot=F,
                                                  model = "linear",
                                                  cost.lambda_w = 0)
   
-  lines(training_set4$x, 0.399683*training_set4$x + 0.410459*training_set4$x_2 + 0.407006*training_set4$x_3 + 0.369909, lwd=4)
-  
-  
-  # Overfit
-  "    Gradient descent (linear) found the following values:
-      w_1:  1
-      w_2:  0.999998
-      w_3:  0.999949
-      w_4:  0.99864
-      w_5:  0.963305
-      w_6:  0.00278349
-      b:    -2.85304e-09
-      J:    2.57499e+13"
-  
-  lines(training_set4$x, 1*training_set4$x + 0.999998*training_set4$x_2 + 0.999949*training_set4$x_3 + 0.99864*training_set4$x_4 + 0.963305*training_set4$x_5 + 0.00278349*training_set4$x_6 -2.85304e-09, lwd=4)
-  
-  lines(training_set1b$x, fitted_sigmoid, pch = 18, col = "black", type = "b")
-  
+  lines(training_set4$x, 1.25765*training_set4$x_2 + 0.0956655, lwd=4)
+  lines(training_set4$x, 3.65684*training_set4$x + 3.37048*training_set4$x_2 + 3.66208, lwd=4)
+  lines(training_set4$x, 0.515225*training_set4$x + 0.285974*training_set4$x_2 + 0.0360659*training_set4$x_3 + 2.49354e-05, lwd=4)
+  lines(training_set4$x, 0.898841*training_set4$x + 0.0671861*training_set4$x_2 + 0.671709*training_set4$x_3 + 0.658829*training_set4$x_4 + 0.920746*training_set4$x_5 + 0.615722*training_set4$x_6 + -2.53318e-89, lwd=4)
   
   
   # Now an example of over/underfitting with logistic regression
@@ -694,32 +680,83 @@ Let's try fitting a non-linear curve. We'll start with a simple quadratic:  y = 
   plot(training_set5$x, training_set5$y, col=training_set5$c, pch=16, xlim=c(-1, 1), ylim=c(-1, 1))
   
   # We'll try fitting a decision boundary using some nth degree polynomial and logistic regression
+  features_set = training_set5$x
+  grad_desc = h.machinelearning.gradient_descent(x=features_set, y=training_set5[,"g"],
+                                                 w_init=0, b_init=0, 
+                                                 alpha=1e-5, n_iters=1e5, 
+                                                 div_crit = 1e+2000, scale=F,
+                                                 verbose=T, search=F, plot=F,
+                                                 model = "logistic",
+                                                 cost.lambda_w = 0)
+  "Gradient descent (logistic) found w (0.0632092) and b (-0.0598015), with a cost (J_wb) of 0.676335."
+  plot(training_set5$x, 0.0632092*training_set5$x, col=training_set5$c, pch=16) # Does a decent job of separating data
+  lines(training_set5$x, (0.0632092*training_set5$x + -0.0598015), pch = 18, col = "black", type = "b")
+
+  training_set5$class = 0.0632092*training_set5$x;
+  training_set5$class_col[training_set5$class < 0] = "blue"; training_set5$class_col[training_set5$class > 0] = "red";
+  training_set5$class_g[training_set5$class < 0] = 0; training_set5$class_g[training_set5$class > 0] = 1;
+  plot(training_set5$x, training_set5$y, col=training_set5$class_col, pch=16, xlim=c(-1, 1), ylim=c(-1, 1))
   
   
+  #fitted_curve = 1 / (1 + exp(- (0.0632092*training_set5$x + -0.0598015) ))
+  #lines(training_set5$x, fitted_curve, pch = 18, col = "green", type = "b")
   
 }
 
 
+###################
+###### TESTS ######
+###################
+{
+  # h.lab
+  hlab_dir='~/Desktop/Research/+h.lab/'
+  source(paste0(hlab_dir,'h.format.expand_grid.R'))
+  source(paste0(hlab_dir,'h.machinelearning.cost.R'))
+  source(paste0(hlab_dir,'h.machinelearning.gradient.R'))
+  source(paste0(hlab_dir,'h.machinelearning.gradient_descent.R'))
+  
+  x = data.frame(
+    a = c(1,2,3),
+    a2 = c(4,5,6),
+    b = c(7,8,9),
+    b2 = c(10,11,12),
+    c = c(13,14,15),
+    c2 = c(16,17,18)
+  )
+  y=c(0,1,0,1,0)
+  w=c(-.40165317,-0.07889237,.45788953,.03316528,.19187711,-.18448437)
+  b=.5
+  cost.lambda_w=.7
+  cost.lambda_b=0
+  model = "linear"
+  
+  
+  # Test the cost and gradient scripts. Do you get the expected output?
+  
+  h.machinelearning.cost(x, y, w, b, model="linear", lambda_w=cost.lambda_w, lambda_b=cost.lambda_b)
+  "3.406914"
+  
+  h.machinelearning.cost(x, y, w, b, model="logistic", lambda_w=cost.lambda_w, lambda_b=cost.lambda_b)
+  "2.027153"
+  
+  h.machinelearning.gradient(x, y, w, b, method = NULL, model = "linear")
+  " [[1]]
+         [,1]     [,2]     [,3]     [,4]     [,5]     [,6]
+    [1,] 5.105691 12.74632 20.38696 28.02759 35.66823 43.30886
 
+    [[2]]
+    [1] 2.546878
+  "
+  h.machinelearning.gradient(x, y, w, b, method = NULL, model = "logistic")
+  " [[1]]
+         [,1]     [,2]     [,3]     [,4]   [,5]     [,6]
+    [1,] 1.227643 3.068207 4.908771 6.749336 8.5899 10.43046
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    [[2]]
+    [1] 0.6135214
+  "
+  
+}
 
 ###################
 ##### FIGURES #####
@@ -783,235 +820,5 @@ if (method == "normal") {
   return(beta)
   
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-if (TRUE) {
-x=list(c(1.24e+03, 3.00e+00, 1.00e+00, 6.40e+01),
-      c(1.95e+03, 3.00e+00, 2.00e+00, 1.70e+01),
-      c(1.72e+03, 3.00e+00, 2.00e+00, 4.20e+01),
-      c(1.96e+03, 3.00e+00, 2.00e+00, 1.50e+01),
-      c(1.31e+03, 2.00e+00, 1.00e+00, 1.40e+01),
-      c(8.64e+02, 2.00e+00, 1.00e+00, 6.60e+01),
-      c(1.84e+03, 3.00e+00, 1.00e+00, 1.70e+01),
-      c(1.03e+03, 3.00e+00, 1.00e+00, 4.30e+01),
-      c(3.19e+03, 4.00e+00, 2.00e+00, 8.70e+01),
-      c(7.88e+02, 2.00e+00, 1.00e+00, 8.00e+01),
-      c(1.20e+03, 2.00e+00, 2.00e+00, 1.70e+01),
-      c(1.56e+03, 2.00e+00, 1.00e+00, 1.80e+01),
-      c(1.43e+03, 3.00e+00, 1.00e+00, 2.00e+01),
-      c(1.22e+03, 2.00e+00, 1.00e+00, 1.50e+01),
-      c(1.09e+03, 2.00e+00, 1.00e+00, 6.40e+01),
-      c(8.48e+02, 1.00e+00, 1.00e+00, 1.70e+01),
-      c(1.68e+03, 3.00e+00, 2.00e+00, 2.30e+01),
-      c(1.77e+03, 3.00e+00, 2.00e+00, 1.80e+01),
-      c(1.04e+03, 3.00e+00, 1.00e+00, 4.40e+01),
-      c(1.65e+03, 2.00e+00, 1.00e+00, 2.10e+01),
-      c(1.09e+03, 2.00e+00, 1.00e+00, 3.50e+01),
-      c(1.32e+03, 3.00e+00, 1.00e+00, 1.40e+01),
-      c(1.59e+03, 0.00e+00, 1.00e+00, 2.00e+01),
-      c(9.72e+02, 2.00e+00, 1.00e+00, 7.30e+01),
-      c(1.10e+03, 3.00e+00, 1.00e+00, 3.70e+01),
-      c(1.00e+03, 2.00e+00, 1.00e+00, 5.10e+01),
-      c(9.04e+02, 3.00e+00, 1.00e+00, 5.50e+01),
-      c(1.69e+03, 3.00e+00, 1.00e+00, 1.30e+01),
-      c(1.07e+03, 2.00e+00, 1.00e+00, 1.00e+02),
-      c(1.42e+03, 3.00e+00, 2.00e+00, 1.90e+01),
-      c(1.16e+03, 3.00e+00, 1.00e+00, 5.20e+01),
-      c(1.94e+03, 3.00e+00, 2.00e+00, 1.20e+01),
-      c(1.22e+03, 2.00e+00, 2.00e+00, 7.40e+01),
-      c(2.48e+03, 4.00e+00, 2.00e+00, 1.60e+01),
-      c(1.20e+03, 2.00e+00, 1.00e+00, 1.80e+01),
-      c(1.84e+03, 3.00e+00, 2.00e+00, 2.00e+01),
-      c(1.85e+03, 3.00e+00, 2.00e+00, 5.70e+01),
-      c(1.66e+03, 3.00e+00, 2.00e+00, 1.90e+01),
-      c(1.10e+03, 2.00e+00, 2.00e+00, 9.70e+01),
-      c(1.78e+03, 3.00e+00, 2.00e+00, 2.80e+01),
-      c(2.03e+03, 4.00e+00, 2.00e+00, 4.50e+01),
-      c(1.78e+03, 4.00e+00, 2.00e+00, 1.07e+02),
-      c(1.07e+03, 2.00e+00, 1.00e+00, 1.00e+02),
-      c(1.55e+03, 3.00e+00, 1.00e+00, 1.60e+01),
-      c(1.95e+03, 3.00e+00, 2.00e+00, 1.60e+01),
-      c(1.22e+03, 2.00e+00, 2.00e+00, 1.20e+01),
-      c(1.62e+03, 3.00e+00, 1.00e+00, 1.60e+01),
-      c(8.16e+02, 2.00e+00, 1.00e+00, 5.80e+01),
-      c(1.35e+03, 3.00e+00, 1.00e+00, 2.10e+01),
-      c(1.57e+03, 3.00e+00, 1.00e+00, 1.40e+01),
-      c(1.49e+03, 3.00e+00, 1.00e+00, 5.70e+01),
-      c(1.51e+03, 2.00e+00, 1.00e+00, 1.60e+01),
-      c(1.10e+03, 3.00e+00, 1.00e+00, 2.70e+01),
-      c(1.76e+03, 3.00e+00, 2.00e+00, 2.40e+01),
-      c(1.21e+03, 2.00e+00, 1.00e+00, 1.40e+01),
-      c(1.47e+03, 3.00e+00, 2.00e+00, 2.40e+01),
-      c(1.77e+03, 3.00e+00, 2.00e+00, 8.40e+01),
-      c(1.65e+03, 3.00e+00, 1.00e+00, 1.90e+01),
-      c(1.03e+03, 3.00e+00, 1.00e+00, 6.00e+01),
-      c(1.12e+03, 2.00e+00, 2.00e+00, 1.60e+01),
-      c(1.15e+03, 3.00e+00, 1.00e+00, 6.20e+01),
-      c(8.16e+02, 2.00e+00, 1.00e+00, 3.90e+01),
-      c(1.04e+03, 3.00e+00, 1.00e+00, 2.50e+01),
-      c(1.39e+03, 3.00e+00, 1.00e+00, 6.40e+01),
-      c(1.60e+03, 3.00e+00, 2.00e+00, 2.90e+01),
-      c(1.22e+03, 3.00e+00, 1.00e+00, 6.30e+01),
-      c(1.07e+03, 2.00e+00, 1.00e+00, 1.00e+02),
-      c(2.60e+03, 4.00e+00, 2.00e+00, 2.20e+01),
-      c(1.43e+03, 3.00e+00, 1.00e+00, 5.90e+01),
-      c(2.09e+03, 3.00e+00, 2.00e+00, 2.60e+01),
-      c(1.79e+03, 4.00e+00, 2.00e+00, 4.90e+01),
-      c(1.48e+03, 3.00e+00, 2.00e+00, 1.60e+01),
-      c(1.04e+03, 3.00e+00, 1.00e+00, 2.50e+01),
-      c(1.43e+03, 3.00e+00, 1.00e+00, 2.20e+01),
-      c(1.16e+03, 3.00e+00, 1.00e+00, 5.30e+01),
-      c(1.55e+03, 3.00e+00, 2.00e+00, 1.20e+01),
-      c(1.98e+03, 3.00e+00, 2.00e+00, 2.20e+01),
-      c(1.06e+03, 3.00e+00, 1.00e+00, 5.30e+01),
-      c(1.18e+03, 2.00e+00, 1.00e+00, 9.90e+01),
-      c(1.36e+03, 2.00e+00, 1.00e+00, 1.70e+01),
-      c(9.60e+02, 3.00e+00, 1.00e+00, 5.10e+01),
-      c(1.46e+03, 3.00e+00, 2.00e+00, 1.60e+01),
-      c(1.45e+03, 3.00e+00, 2.00e+00, 2.50e+01),
-      c(1.21e+03, 2.00e+00, 1.00e+00, 1.50e+01),
-      c(1.55e+03, 3.00e+00, 2.00e+00, 1.60e+01),
-      c(8.82e+02, 3.00e+00, 1.00e+00, 4.90e+01),
-      c(2.03e+03, 4.00e+00, 2.00e+00, 4.50e+01),
-      c(1.04e+03, 3.00e+00, 1.00e+00, 6.20e+01),
-      c(1.62e+03, 3.00e+00, 1.00e+00, 1.60e+01),
-      c(8.03e+02, 2.00e+00, 1.00e+00, 8.00e+01),
-      c(1.43e+03, 3.00e+00, 2.00e+00, 2.10e+01),
-      c(1.66e+03, 3.00e+00, 1.00e+00, 6.10e+01),
-      c(1.54e+03, 3.00e+00, 1.00e+00, 1.60e+01),
-      c(9.48e+02, 3.00e+00, 1.00e+00, 5.30e+01),
-      c(1.22e+03, 2.00e+00, 2.00e+00, 1.20e+01),
-      c(1.43e+03, 2.00e+00, 1.00e+00, 4.30e+01),
-      c(1.66e+03, 3.00e+00, 2.00e+00, 1.90e+01),
-      c(1.21e+03, 3.00e+00, 1.00e+00, 2.00e+01),
-      c(1.05e+03, 2.00e+00, 1.00e+00, 6.50e+01))
-y=c(300.  , 509.8 , 394.  , 540.  , 415.  , 230.  , 560.  , 294.  ,
-    718.2 , 200.  , 302.  , 468.  , 374.2 , 388.  , 282.  , 311.8 ,
-    401.  , 449.8 , 301.  , 502.  , 340.  , 400.28, 572.  , 264.  ,
-    304.  , 298.  , 219.8 , 490.7 , 216.96, 368.2 , 280.  , 526.87,
-    237.  , 562.43, 369.8 , 460.  , 374.  , 390.  , 158.  , 426.  ,
-    390.  , 277.77, 216.96, 425.8 , 504.  , 329.  , 464.  , 220.  ,
-    358.  , 478.  , 334.  , 426.98, 290.  , 463.  , 390.8 , 354.  ,
-    350.  , 460.  , 237.  , 288.3 , 282.  , 249.  , 304.  , 332.  ,
-    351.8 , 310.  , 216.96, 666.34, 330.  , 480.  , 330.3 , 348.  ,
-    304.  , 384.  , 316.  , 430.4 , 450.  , 284.  , 275.  , 414.  ,
-    258.  , 378.  , 350.  , 412.  , 373.  , 225.  , 390.  , 267.4 ,
-    464.  , 174.  , 340.  , 430.  , 440.  , 216.  , 329.  , 388.  ,
-    390.  , 356.  , 257.8 )
-} # Load large housing price data set
-
-size=NULL; rooms=NULL; floors=NULL; age=NULL
-for (i in 1:length(x)) {
-  size = append(size, x[[i]][1])
-  rooms = append(rooms, x[[i]][2])
-  floors = append(floors, x[[i]][3])
-  age = append(age, x[[i]][4])
-}
-
-training_set <- data.frame(
-  size = size,
-  rooms = rooms,
-  floors = floors,
-  age = age,
-  price = y
-)
-
-plot(training_set$size,training_set$price)
-plot(training_set$rooms,training_set$price)
-plot(training_set$floors,training_set$price)
-plot(training_set$age,training_set$price)
-
-features_set=training_set[,c("size","rooms","floors","age")]
-target_set=training_set[,"price"]
-x=features_set
-y=target_set
-
-w_init=c(0,0,0,0)
-b_init=0
-tmp_alpha=1e-7
-iters=10
-
-grad_desc = h.machinelearning.gradient_descent(x=features_set, y=target_set,
-                                               w_in=w_init, b_in=b_init, 
-                                               alpha=tmp_alpha, n_iters=iters, 
-                                               verbose=TRUE, search=FALSE, plot=TRUE, scale=FALSE)
-
-
-training_set <- data.frame(
-  size = scale(size),
-  rooms = scale(rooms),
-  floors = scale(floors),
-  age = scale(age),
-  price = scale(y)
-)
-
-plot(training_set$size,training_set$age)
-
-
-features_set=training_set[,c("size","rooms","floors","age")]
-target_set=training_set[,"price"]
-x=features_set
-y=target_set
-tmp_alpha=1.0e-1 
-grad_desc = h.machinelearning.gradient_descent(x=features_set, y=target_set,
-                                               w_in=w_init, b_in=b_init, 
-                                               alpha=tmp_alpha, n_iters=1000, 
-                                               verbose=TRUE, search=FALSE, plot=TRUE, scale=TRUE)
-
-
-
-
-
-x = c(6.1101,  5.5277,  8.5186,  7.0032,  5.8598,  8.3829,  7.4764,
-   8.5781,  6.4862,  5.0546,  5.7107, 14.164 ,  5.734 ,  8.4084,
-   5.6407,  5.3794,  6.3654,  5.1301,  6.4296,  7.0708,  6.1891,
-   20.27  ,  5.4901,  6.3261,  5.5649, 18.945 , 12.828 , 10.957 ,
-   13.176 , 22.203 ,  5.2524,  6.5894,  9.2482,  5.8918,  8.2111,
-   7.9334,  8.0959,  5.6063, 12.836 ,  6.3534,  5.4069,  6.8825,
-   11.708 ,  5.7737,  7.8247,  7.0931,  5.0702,  5.8014, 11.7   ,
-   5.5416,  7.5402,  5.3077,  7.4239,  7.6031,  6.3328,  6.3589,
-   6.2742,  5.6397,  9.3102,  9.4536,  8.8254,  5.1793, 21.279 ,
-   14.908 , 18.959 ,  7.2182,  8.2951, 10.236 ,  5.4994, 20.341 ,
-   10.136 ,  7.3345,  6.0062,  7.2259,  5.0269,  6.5479,  7.5386,
-   5.0365, 10.274 ,  5.1077,  5.7292,  5.1884,  6.3557,  9.7687,
-   6.5159,  8.5172,  9.1802,  6.002 ,  5.5204,  5.0594,  5.7077,
-   7.6366,  5.8707,  5.3054,  8.2934, 13.394 ,  5.4369)
-y = c(17.592  ,  9.1302 , 13.662  , 11.854  ,  6.8233 , 11.886  ,
-      4.3483 , 12.     ,  6.5987 ,  3.8166 ,  3.2522 , 15.505  ,
-      3.1551 ,  7.2258 ,  0.71618,  3.5129 ,  5.3048 ,  0.56077,
-      3.6518 ,  5.3893 ,  3.1386 , 21.767  ,  4.263  ,  5.1875 ,
-      3.0825 , 22.638  , 13.501  ,  7.0467 , 14.692  , 24.147  ,
-      -1.22   ,  5.9966 , 12.134  ,  1.8495 ,  6.5426 ,  4.5623 ,
-      4.1164 ,  3.3928 , 10.117  ,  5.4974 ,  0.55657,  3.9115 ,
-      5.3854 ,  2.4406 ,  6.7318 ,  1.0463 ,  5.1337 ,  1.844  ,
-      8.0043 ,  1.0179 ,  6.7504 ,  1.8396 ,  4.2885 ,  4.9981 ,
-      1.4233 , -1.4211 ,  2.4756 ,  4.6042 ,  3.9624 ,  5.4141 ,
-      5.1694 , -0.74279, 17.929  , 12.054  , 17.054  ,  4.8852 ,
-      5.7442 ,  7.7754 ,  1.0173 , 20.992  ,  6.6799 ,  4.0259 ,
-      1.2784 ,  3.3411 , -2.6807 ,  0.29678,  3.8845 ,  5.7014 ,
-      6.7526 ,  2.0576 ,  0.47953,  0.20421,  0.67861,  7.5435 ,
-      5.3436 ,  4.2415 ,  6.7981 ,  0.92695,  0.152  ,  2.8214 ,
-      1.8451 ,  4.2959 ,  7.2029 ,  1.9869 ,  0.14454,  9.0551 ,
-      0.61705)
-plot(x,y)
-
-grad_desc = h.machinelearning.gradient_descent(x=x, y=y,
-                                               w_in=100, b_in=100, 
-                                               alpha=.001, n_iters=5000, 
-                                               verbose=TRUE, search=TRUE, plot=TRUE, scale=FALSE)
-
 
 
